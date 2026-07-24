@@ -116,6 +116,7 @@ final class TripStore: ObservableObject {
     }
 
     func signInWithGoogle() async {
+        errorMessage = nil
         do {
             let session = try await GoogleAuth.signIn()
             await AppConfig.tokenStore.setToken(session.accessToken)

@@ -17,6 +17,7 @@
 import Foundation
 import GoogleSignIn
 import UIKit
+import CryptoKit
 
 enum GoogleAuthError: LocalizedError {
     case noIDToken
@@ -67,15 +68,27 @@ enum GoogleAuth {
             throw GoogleAuthError.noPresentingViewController
         }
 
-        let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController)
+        // Supabase's id_token grant validates the token's `nonce` claim by default.
+        // Google hashes the nonce it's given (SHA256) into that claim, so we send the
+        // hashed value to GIDSignIn and the raw value to Supabase, which hashes it
+        // the same way to compare.
+        let rawNonce = randomNonceString()
+        let hashedNonce = sha256(rawNonce)
+
+        let result = try await GIDSignIn.sharedInstance.signIn(
+            withPresenting: rootViewController,
+            hint: nil,
+            additionalScopes: nil,
+            nonce: hashedNonce
+        )
         guard let idToken = result.user.idToken?.tokenString else {
             throw GoogleAuthError.noIDToken
         }
 
-        return try await exchangeWithSupabase(idToken: idToken)
+        return try await exchangeWithSupabase(idToken: idToken, nonce: rawNonce)
     }
 
-    private static func exchangeWithSupabase(idToken: String) async throws -> SupabaseSession {
+    private static func exchangeWithSupabase(idToken: String, nonce: String) async throws -> SupabaseSession {
         let url = AppConfig.supabaseURL
             .appendingPathComponent("auth/v1/token")
             .appending(queryItems: [URLQueryItem(name: "grant_type", value: "id_token")])
@@ -84,7 +97,11 @@ enum GoogleAuth {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue(AppConfig.supabasePublishableKey, forHTTPHeaderField: "apikey")
-        request.httpBody = try JSONEncoder().encode(["provider": "google", "id_token": idToken])
+        request.httpBody = try JSONEncoder().encode([
+            "provider": "google",
+            "id_token": idToken,
+            "nonce": nonce,
+        ])
 
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
@@ -93,5 +110,27 @@ enum GoogleAuth {
         }
 
         return try JSONDecoder().decode(SupabaseSession.self, from: data)
+    }
+
+    private static func randomNonceString(length: Int = 32) -> String {
+        let charset: [Character] = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+        var result = ""
+        var remainingLength = length
+        while remainingLength > 0 {
+            var randoms = [UInt8](repeating: 0, count: 16)
+            _ = SecRandomCopyBytes(kSecRandomDefault, randoms.count, &randoms)
+            for random in randoms {
+                if remainingLength == 0 { break }
+                if random < charset.count {
+                    result.append(charset[Int(random)])
+                    remainingLength -= 1
+                }
+            }
+        }
+        return result
+    }
+
+    private static func sha256(_ input: String) -> String {
+        SHA256.hash(data: Data(input.utf8)).compactMap { String(format: "%02x", $0) }.joined()
     }
 }

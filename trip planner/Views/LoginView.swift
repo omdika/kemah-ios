@@ -35,6 +35,17 @@ struct LoginView: View {
             .padding(24)
         }
         .background(Theme.background.ignoresSafeArea())
+        .alert(
+            "Gagal masuk",
+            isPresented: Binding(
+                get: { store.errorMessage != nil },
+                set: { if !$0 { store.errorMessage = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(store.errorMessage ?? "")
+        }
     }
 
     private var hero: some View {
