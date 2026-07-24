@@ -15,20 +15,25 @@ enum AppConfig {
     /// Base URL of the Kemah REST backend. Trailing slash matters for path joins.
     static let baseURL = URL(string: "https://kemah-sg-763614853578.asia-southeast2.run.app/")!
 
+    /// Supabase project URL + publishable key, used only for the Google ID-token ->
+    /// Supabase session exchange (see Networking/GoogleAuth.swift). This is the
+    /// *publishable* key (safe to embed client-side, not the backend's secret key).
+    static let supabaseURL = URL(string: "https://jfqwztqnuftubuxbgrul.supabase.co")!
+    static let supabasePublishableKey = "sb_publishable_O0B3yQ0e23F4b9H1Atvjtw_Kfu-6fx4"
+
     /// Placeholder Bearer value for the backend's `SKIP_AUTH=true` dev mode, where the
     /// token's contents are ignored and every request is treated as the backend's
-    /// configured `DEV_USER_ID`. APIClient still requires a non-nil token to send a
-    /// request at all (see `authenticated` requests), so this stands in until real
-    /// Google/Apple sign-in is wired up.
+    /// configured `DEV_USER_ID`. Used until a real sign-in replaces it via `tokenStore`.
     static let skipAuthDevToken = "dev-skip-auth"
+
+    /// Shared token store: APIClient reads from it, and a real sign-in flow
+    /// (GoogleAuth.signIn) writes the resulting Supabase session token into it.
+    static let tokenStore = InMemoryTokenStore(initialToken: skipAuthDevToken)
 
     static func makeRepository() -> KemahRepository {
         if useMock {
             return MockRepository()
         } else {
-            // TODO: after Google/Apple sign-in, call tokenStore.setToken(idToken)
-            // and drop the skipAuthDevToken seed once SKIP_AUTH=false in prod.
-            let tokenStore = InMemoryTokenStore(initialToken: skipAuthDevToken)
             let client = APIClient(baseURL: baseURL, tokenProvider: tokenStore)
             return APIRepository(client: client)
         }

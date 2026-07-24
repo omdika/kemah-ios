@@ -16,9 +16,15 @@ struct LoginView: View {
         VStack(spacing: 0) {
             hero
             VStack(spacing: 12) {
-                authButton(title: "Lanjutkan dengan Google", system: "g.circle.fill", filled: false)
-                authButton(title: "Lanjutkan dengan Facebook", system: "f.circle.fill", filled: false)
-                authButton(title: "Masuk dengan Apple", system: "apple.logo", filled: true)
+                authButton(title: "Lanjutkan dengan Google", system: "g.circle.fill", filled: false) {
+                    Task { await store.signInWithGoogle() }
+                }
+                authButton(title: "Lanjutkan dengan Facebook", system: "f.circle.fill", filled: false) {
+                    Task { await store.signIn() }
+                }
+                authButton(title: "Masuk dengan Apple", system: "apple.logo", filled: true) {
+                    Task { await store.signIn() }
+                }
 
                 Text("Dengan masuk, kamu setuju dengan Ketentuan Layanan & Kebijakan Privasi Kemah.")
                     .font(.caption2)
@@ -59,10 +65,8 @@ struct LoginView: View {
         .ignoresSafeArea(edges: .top)
     }
 
-    private func authButton(title: String, system: String, filled: Bool) -> some View {
-        Button {
-            Task { await store.signIn() }
-        } label: {
+    private func authButton(title: String, system: String, filled: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
             HStack(spacing: 12) {
                 Image(systemName: system)
                     .font(.title3)

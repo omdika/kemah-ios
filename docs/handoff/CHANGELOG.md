@@ -5,6 +5,16 @@ Versioning is semantic-ish: MAJOR for breaking model/flow changes, MINOR for new
 
 Each released version is archived verbatim under [`versions/`](./versions/); the files at the handoff root are always the latest.
 
+## [1.3.1] — 2026-07-24
+
+### Changed
+
+**Auth — Google Sign-In implemented (iOS)**
+- The Login screen's "Lanjutkan dengan Google" button now performs real Google Sign-In (`GoogleSignIn-iOS`) instead of the mocked entry.
+- Client exchanges the resulting Google ID token for a Supabase session directly via Supabase's REST token endpoint (`grant_type=id_token`) — no Supabase SDK added, consistent with the app's plain-REST networking convention.
+- No wire-format changes to any endpoint in this doc; this codifies the exact mechanism the Auth section already specified generically.
+- Facebook and Apple buttons are still mocked; only Google is wired to a real provider so far.
+
 ## [1.3.0] — 2026-07-24
 
 ### Changed

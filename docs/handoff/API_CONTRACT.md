@@ -1,10 +1,10 @@
 # API Contract: Kemah
 
-> **Version:** 1.3.0 — see [`CHANGELOG.md`](./CHANGELOG.md). Older snapshots under [`versions/`](./versions/).
+> **Version:** 1.3.1 — see [`CHANGELOG.md`](./CHANGELOG.md). Older snapshots under [`versions/`](./versions/).
 
 Defines the backend contract needed to make the prototype's mocked actions real. Written as REST for portability; if using Firestore/Supabase realtime instead, treat each resource below as a collection/table with the same shape and add realtime listeners on `trips/{id}` and its subcollections instead of polling.
 
-Auth: all endpoints below require `Authorization: Bearer <idToken>` (Google/Apple ID token exchanged via Firebase Auth / Supabase Auth on login). No custom auth server needed — use the BaaS's built-in Google/Apple sign-in and pass its session token through.
+Auth: all endpoints below require `Authorization: Bearer <idToken>` (Google/Apple ID token exchanged via Firebase Auth / Supabase Auth on login). No custom auth server needed — use the BaaS's built-in Google/Apple sign-in and pass its session token through. **[v1.3.1]** iOS implements the Google leg natively: `GoogleSignIn-iOS` obtains a Google ID token, which the client exchanges directly via Supabase's REST token endpoint (`POST /auth/v1/token?grant_type=id_token`, no Supabase SDK) for a Supabase session — that session's `access_token` is the bearer token sent to every endpoint below.
 
 > **[v1.1.0] Per-user privacy.** Personal checklist items and personal expenses are private to the user who created them. The server sets their `owner` from the authenticated token and MUST only return a personal entry to its owner. All list/detail responses below are already filtered to the caller: another participant never sees your personal `items`/`budgetItems`, and they are excluded from split-bill and group budget totals.
 

@@ -115,6 +115,18 @@ final class TripStore: ObservableObject {
         }
     }
 
+    func signInWithGoogle() async {
+        do {
+            let session = try await GoogleAuth.signIn()
+            await AppConfig.tokenStore.setToken(session.accessToken)
+            user = try await repository.me()
+            isAuthenticated = true
+            await loadTrips()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
     func signOut() {
         isAuthenticated = false
         user = nil
