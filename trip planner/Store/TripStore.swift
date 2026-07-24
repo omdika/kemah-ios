@@ -33,6 +33,11 @@ final class TripStore: ObservableObject {
     @Published var toastMessage: String?
     @Published var errorMessage: String?
 
+    // Invite deep link: set while an invite is waiting on login, and again
+    // right after a join succeeds so ContentView can push navigation to it.
+    @Published var pendingInvite: PendingInvite?
+    @Published var justJoinedTripId: String?
+
     private var toastTask: Task<Void, Never>?
 
     init(repository: KemahRepository) {
@@ -107,11 +112,13 @@ final class TripStore: ObservableObject {
             user = try await repository.me()
             isAuthenticated = true
             await loadTrips()
+            await consumePendingInviteIfAny()
         } catch {
             errorMessage = error.localizedDescription
             // In mock mode `me()` always succeeds; still enter the app for the demo.
             isAuthenticated = true
             await loadTrips()
+            await consumePendingInviteIfAny()
         }
     }
 
@@ -123,6 +130,60 @@ final class TripStore: ObservableObject {
             user = try await repository.me()
             isAuthenticated = true
             await loadTrips()
+            await consumePendingInviteIfAny()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    // MARK: - Invite deep link
+
+    /// Parses an incoming invite URL, whether it arrived via the `kemah://`
+    /// custom scheme (works today, no domain needed) or the `https://kemah.app/...`
+    /// Universal Link shape from API_CONTRACT.md (works once that domain hosts
+    /// an apple-app-site-association file — same parsing either way).
+    static func parseInviteURL(_ url: URL) -> PendingInvite? {
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else { return nil }
+        let pathParts = components.path.split(separator: "/").map(String.init)
+
+        let tripId: String?
+        if url.scheme == "kemah", components.host == "join" {
+            tripId = pathParts.first
+        } else if let joinIndex = pathParts.firstIndex(of: "join"), pathParts.count > joinIndex + 1 {
+            tripId = pathParts[joinIndex + 1]
+        } else {
+            tripId = nil
+        }
+
+        guard let tripId, let token = components.queryItems?.first(where: { $0.name == "token" })?.value else {
+            return nil
+        }
+        return PendingInvite(tripId: tripId, token: token)
+    }
+
+    /// Call from `.onOpenURL`. If already logged in, joins immediately;
+    /// otherwise stashes it until sign-in completes.
+    func handleIncomingURL(_ url: URL) {
+        guard let invite = Self.parseInviteURL(url) else { return }
+        if isAuthenticated {
+            Task { await join(invite) }
+        } else {
+            pendingInvite = invite
+        }
+    }
+
+    private func consumePendingInviteIfAny() async {
+        guard let invite = pendingInvite else { return }
+        pendingInvite = nil
+        await join(invite)
+    }
+
+    private func join(_ invite: PendingInvite) async {
+        do {
+            let tripId = try await repository.joinTrip(tripId: invite.tripId, token: invite.token)
+            await loadTrips()
+            justJoinedTripId = tripId
+            showToast("Berhasil gabung ke trip")
         } catch {
             errorMessage = error.localizedDescription
         }

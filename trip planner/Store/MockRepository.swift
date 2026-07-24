@@ -171,6 +171,10 @@ actor MockRepository: KemahRepository {
         InviteLink(url: "https://kemah.app/join/\(tripId)?token=demo\(tripId)")
     }
 
+    func joinTrip(tripId: String, token: String) async throws -> String {
+        tripId
+    }
+
     // MARK: Split Bill
 
     func splitBill(tripId: String) async throws -> SplitBillResponse {

@@ -16,6 +16,13 @@ struct LoginView: View {
         VStack(spacing: 0) {
             hero
             VStack(spacing: 12) {
+                if store.pendingInvite != nil {
+                    Label("Masuk dulu untuk gabung ke trip yang diundang", systemImage: "envelope.badge.person.crop")
+                        .font(.footnote.weight(.medium))
+                        .foregroundStyle(store.accent.color)
+                        .padding(.bottom, 4)
+                }
+
                 authButton(title: "Lanjutkan dengan Google", system: "g.circle.fill", filled: false) {
                     Task { await store.signInWithGoogle() }
                 }

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import GoogleSignIn
 
 @main
 struct trip_plannerApp: App {
@@ -17,9 +16,6 @@ struct trip_plannerApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .onOpenURL { url in
-                    GIDSignIn.sharedInstance.handle(url)
-                }
         }
     }
 }

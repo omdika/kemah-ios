@@ -236,8 +236,8 @@ final class APIClient: Sendable {
         try await request(.post, path: "trips/\(tripId)/invite/invite-link")
     }
 
-    func join(token: String) async throws -> JoinResponse {
-        try await request(.post, path: "trips/join", body: JoinRequest(token: token), authenticated: false)
+    func join(tripId: String, token: String) async throws -> JoinResponse {
+        try await request(.post, path: "trips/\(tripId)/invite/join", body: JoinRequest(token: token))
     }
 
     // MARK: - Uploads

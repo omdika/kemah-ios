@@ -11,3 +11,10 @@ enum Route: Hashable {
     case trip(String)
     case splitBill
 }
+
+/// A parsed `kemah://join/...` (or future Universal Link) invite, held by
+/// TripStore until sign-in completes or the join call resolves.
+struct PendingInvite: Equatable {
+    let tripId: String
+    let token: String
+}

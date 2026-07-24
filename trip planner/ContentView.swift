@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import GoogleSignIn
 
 struct ContentView: View {
     @StateObject private var store = TripStore(repository: AppConfig.makeRepository())
@@ -33,6 +34,16 @@ struct ContentView: View {
         .tint(store.accent.color)
         .environmentObject(store)
         .toast($store.toastMessage)
+        .onOpenURL { url in
+            if !GIDSignIn.sharedInstance.handle(url) {
+                store.handleIncomingURL(url)
+            }
+        }
+        .onChange(of: store.justJoinedTripId) { tripId in
+            guard let tripId else { return }
+            path.append(.trip(tripId))
+            store.justJoinedTripId = nil
+        }
     }
 }
 
