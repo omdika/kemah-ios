@@ -2,10 +2,10 @@
 //  GoogleAuth.swift
 //  trip planner
 //
-//  Native Google Sign-In, then exchange the resulting ID token for a Supabase
-//  session via Supabase's plain REST token endpoint (no Supabase SDK — same
-//  "plain REST" convention as APIClient). The returned access_token is what
-//  gets fed into AppConfig.tokenStore and sent as `Authorization: Bearer`.
+//  Native Google Sign-In, then exchanges the resulting ID token for a
+//  Supabase session via SupabaseAuth. The returned session gets persisted
+//  (KeychainSessionStore) and fed into AppConfig.tokenStore by the caller
+//  (TripStore.signInWithGoogle).
 //
 //  Requires the GoogleSignIn-iOS package (File > Add Package Dependencies...
 //  https://github.com/google/GoogleSignIn-iOS) and a URL Type / URL scheme
@@ -22,7 +22,6 @@ import CryptoKit
 enum GoogleAuthError: LocalizedError {
     case noIDToken
     case noPresentingViewController
-    case tokenExchangeFailed(String)
 
     var errorDescription: String? {
         switch self {
@@ -30,8 +29,6 @@ enum GoogleAuthError: LocalizedError {
             return "Google tidak mengembalikan ID token."
         case .noPresentingViewController:
             return "Tidak ada layar aktif untuk menampilkan Google Sign-In."
-        case let .tokenExchangeFailed(message):
-            return "Gagal tukar token dengan Supabase: \(message)"
         }
     }
 }
@@ -40,16 +37,6 @@ enum GoogleAuth {
     /// From Google Cloud Console -> APIs & Services -> Credentials.
     static let iOSClientID = "763614853578-g9og9okjgm96ua5kcbn8g9t05s99qctv.apps.googleusercontent.com"
     static let webClientID = "763614853578-q77qa8ih2aiert1ofc0g0tpja3tud151.apps.googleusercontent.com"
-
-    struct SupabaseSession: Decodable {
-        let accessToken: String
-        let refreshToken: String
-
-        enum CodingKeys: String, CodingKey {
-            case accessToken = "access_token"
-            case refreshToken = "refresh_token"
-        }
-    }
 
     /// Call once at app launch (see trip_plannerApp.init).
     static func configure() {
@@ -60,7 +47,7 @@ enum GoogleAuth {
     }
 
     @MainActor
-    static func signIn() async throws -> SupabaseSession {
+    static func signIn() async throws -> StoredSession {
         guard let rootViewController = UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })
             .first?.windows.first(where: \.isKeyWindow)?.rootViewController
@@ -85,31 +72,7 @@ enum GoogleAuth {
             throw GoogleAuthError.noIDToken
         }
 
-        return try await exchangeWithSupabase(idToken: idToken, nonce: rawNonce)
-    }
-
-    private static func exchangeWithSupabase(idToken: String, nonce: String) async throws -> SupabaseSession {
-        let url = AppConfig.supabaseURL
-            .appendingPathComponent("auth/v1/token")
-            .appending(queryItems: [URLQueryItem(name: "grant_type", value: "id_token")])
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue(AppConfig.supabasePublishableKey, forHTTPHeaderField: "apikey")
-        request.httpBody = try JSONEncoder().encode([
-            "provider": "google",
-            "id_token": idToken,
-            "nonce": nonce,
-        ])
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
-            let body = String(data: data, encoding: .utf8) ?? "unknown error"
-            throw GoogleAuthError.tokenExchangeFailed(body)
-        }
-
-        return try JSONDecoder().decode(SupabaseSession.self, from: data)
+        return try await SupabaseAuth.exchangeGoogleIDToken(idToken, nonce: rawNonce)
     }
 
     private static func randomNonceString(length: Int = 32) -> String {

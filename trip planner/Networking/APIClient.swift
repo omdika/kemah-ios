@@ -63,11 +63,21 @@ final class APIClient: Sendable {
     let baseURL: URL
     private let tokenProvider: TokenProvider
     private let session: URLSession
+    /// Called once when a request comes back 401. Should refresh the session
+    /// and update `tokenProvider` itself (they typically share the same
+    /// underlying token store); returns whether the request should be retried.
+    private let onUnauthorized: (@Sendable () async -> Bool)?
 
-    init(baseURL: URL, tokenProvider: TokenProvider, session: URLSession = .shared) {
+    init(
+        baseURL: URL,
+        tokenProvider: TokenProvider,
+        session: URLSession = .shared,
+        onUnauthorized: (@Sendable () async -> Bool)? = nil
+    ) {
         self.baseURL = baseURL
         self.tokenProvider = tokenProvider
         self.session = session
+        self.onUnauthorized = onUnauthorized
     }
 
     // MARK: HTTP verbs
@@ -114,7 +124,8 @@ final class APIClient: Sendable {
         path: String,
         query: [URLQueryItem],
         body: Encodable?,
-        authenticated: Bool
+        authenticated: Bool,
+        isRetry: Bool = false
     ) async throws -> Data {
         guard var components = URLComponents(url: baseURL.appendingPathComponent(path), resolvingAgainstBaseURL: false) else {
             throw APIError.invalidURL
@@ -147,6 +158,9 @@ final class APIClient: Sendable {
 
         guard let http = response as? HTTPURLResponse else { throw APIError.invalidResponse }
         guard (200..<300).contains(http.statusCode) else {
+            if http.statusCode == 401, authenticated, !isRetry, let onUnauthorized, await onUnauthorized() {
+                return try await requestData(method, path: path, query: query, body: body, authenticated: authenticated, isRetry: true)
+            }
             let bodyText = String(data: data, encoding: .utf8) ?? ""
             throw APIError.http(status: http.statusCode, body: bodyText)
         }

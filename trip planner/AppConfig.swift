@@ -34,8 +34,25 @@ enum AppConfig {
         if useMock {
             return MockRepository()
         } else {
-            let client = APIClient(baseURL: baseURL, tokenProvider: tokenStore)
+            let client = APIClient(baseURL: baseURL, tokenProvider: tokenStore, onUnauthorized: refreshStoredSession)
             return APIRepository(client: client)
+        }
+    }
+
+    /// Reactive fallback for APIClient: a request came back 401 (e.g. the access
+    /// token expired mid-session). Try the stored refresh token once; on success
+    /// update both the Keychain and the in-memory token store, so the caller's
+    /// retry picks up the new token via `tokenStore.currentToken()`.
+    private static func refreshStoredSession() async -> Bool {
+        guard let session = KeychainSessionStore.load() else { return false }
+        do {
+            let refreshed = try await SupabaseAuth.refresh(refreshToken: session.refreshToken)
+            KeychainSessionStore.save(refreshed)
+            await tokenStore.setToken(refreshed.accessToken)
+            return true
+        } catch {
+            KeychainSessionStore.clear()
+            return false
         }
     }
 }

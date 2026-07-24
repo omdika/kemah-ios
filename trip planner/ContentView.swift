@@ -15,7 +15,9 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            if store.isAuthenticated {
+            if store.isRestoringSession {
+                Theme.background.ignoresSafeArea()
+            } else if store.isAuthenticated {
                 NavigationStack(path: $path) {
                     HomeView(path: $path)
                         .navigationDestination(for: Route.self) { route in
@@ -34,6 +36,9 @@ struct ContentView: View {
         .tint(store.accent.color)
         .environmentObject(store)
         .toast($store.toastMessage)
+        .task {
+            await store.restoreSession()
+        }
         .onOpenURL { url in
             if !GIDSignIn.sharedInstance.handle(url) {
                 store.handleIncomingURL(url)

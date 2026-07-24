@@ -18,6 +18,9 @@ final class TripStore: ObservableObject {
     // Auth
     @Published var user: User?
     @Published var isAuthenticated = false
+    /// True while `restoreSession()` is checking Keychain at launch — ContentView
+    /// shows a blank/loading state instead of flashing LoginView first.
+    @Published private(set) var isRestoringSession = true
 
     // Data
     @Published var trips: [TripSummary] = []
@@ -126,6 +129,7 @@ final class TripStore: ObservableObject {
         errorMessage = nil
         do {
             let session = try await GoogleAuth.signIn()
+            KeychainSessionStore.save(session)
             await AppConfig.tokenStore.setToken(session.accessToken)
             user = try await repository.me()
             isAuthenticated = true
@@ -133,6 +137,32 @@ final class TripStore: ObservableObject {
             await consumePendingInviteIfAny()
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+
+    /// Call once at app launch (see ContentView.task). Restores a Keychain-
+    /// persisted session — refreshing it first if it's expired or close to
+    /// it — so the user doesn't have to sign in again after closing the app.
+    /// Leaves `isAuthenticated == false` (falls through to LoginView) if there's
+    /// no stored session or it can no longer be refreshed.
+    func restoreSession() async {
+        defer { isRestoringSession = false }
+
+        guard var session = KeychainSessionStore.load() else { return }
+        do {
+            if session.isExpiredOrExpiringSoon {
+                session = try await SupabaseAuth.refresh(refreshToken: session.refreshToken)
+                KeychainSessionStore.save(session)
+            }
+            await AppConfig.tokenStore.setToken(session.accessToken)
+            user = try await repository.me()
+            isAuthenticated = true
+            await loadTrips()
+            await consumePendingInviteIfAny()
+        } catch {
+            // Refresh token itself is no longer valid (expired/revoked) — the
+            // stored session is dead, fall back to LoginView.
+            KeychainSessionStore.clear()
         }
     }
 
@@ -190,6 +220,8 @@ final class TripStore: ObservableObject {
     }
 
     func signOut() {
+        KeychainSessionStore.clear()
+        Task { await AppConfig.tokenStore.setToken(AppConfig.skipAuthDevToken) }
         isAuthenticated = false
         user = nil
         trips = []
