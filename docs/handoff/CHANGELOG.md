@@ -5,6 +5,15 @@ Versioning is semantic-ish: MAJOR for breaking model/flow changes, MINOR for new
 
 Each released version is archived verbatim under [`versions/`](./versions/); the files at the handoff root are always the latest.
 
+## [1.4.0] — 2026-07-24
+
+### Added
+
+**Guest mode — preview a trip before signing in**
+- `GET /trips/:tripId/invite/preview?token=...` — new unauthenticated endpoint. Anyone holding an invite link can see a narrow preview (name, location, date, cover, participants, checklist progress count) without signing in first.
+- Deliberately excludes budget/money data, personal items, and per-item checklist detail — those still require actually joining (`POST /join`, which still requires login).
+- iOS: opening an invite link now always shows a read-only preview sheet first, regardless of auth state, with a context-appropriate CTA ("Lanjutkan dengan Google" if signed out, "Gabung Trip Ini" if already signed in) rather than immediately forcing the login screen.
+
 ## [1.3.1] — 2026-07-24
 
 ### Changed

@@ -1,6 +1,6 @@
 # API Contract: Kemah
 
-> **Version:** 1.3.1 — see [`CHANGELOG.md`](./CHANGELOG.md). Older snapshots under [`versions/`](./versions/).
+> **Version:** 1.4.0 — see [`CHANGELOG.md`](./CHANGELOG.md). Older snapshots under [`versions/`](./versions/).
 
 Defines the backend contract needed to make the prototype's mocked actions real. Written as REST for portability; if using Firestore/Supabase realtime instead, treat each resource below as a collection/table with the same shape and add realtime listeners on `trips/{id}` and its subcollections instead of polling.
 
@@ -162,6 +162,17 @@ Any subset of `name, price, paidBy, pic, splitMode, isPersonal`. Toggling `isPer
 - Pool-derived parts use `label: "Bagi rata"`; direct-debt parts use the expense `name` as the label.
 
 ## Invite (`/trips/:tripId/invite`)
+
+### `GET /preview?token=abc123` (unauthenticated — guest mode)
+**[v1.4.0]** Lets someone holding an invite link see what they'd be joining *before* signing in. No membership or even a signed-in caller required — only a valid `token` for that trip. Returns a deliberately narrow, guest-safe subset: no budget/money data, no personal items, no per-item checklist detail (just a progress count). 404s if the trip or token doesn't match.
+```json
+{
+  "id": "t1", "name": "Camping Gunung Papandayan", "location": "Garut, Jawa Barat",
+  "date": "2026-08-01", "coverUrl": null,
+  "participants": [ { "name": "Dinda", "picForLabel": "Koordinator" } ],
+  "checklistProgress": { "checked": 8, "total": 15 }
+}
+```
 
 ### `POST /invite-link`
 Generates (or returns existing) a shareable join link.
