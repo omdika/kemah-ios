@@ -139,15 +139,29 @@ struct SplitBillView: View {
                 }
                 .buttonStyle(.plain)
 
-                VStack(alignment: .leading, spacing: 2) {
-                    HStack(spacing: 6) {
-                        Text(t.from).font(.subheadline.weight(.semibold))
-                        Image(systemName: "arrow.right").font(.caption2)
-                        Text(t.to).font(.subheadline.weight(.semibold))
+                VStack(alignment: .leading, spacing: 0) {
+                    ViewThatFits(in: .horizontal) {
+                        // Single line — fits when both names are short
+                        HStack(spacing: 6) {
+                            Text(t.from).font(.subheadline.weight(.semibold))
+                            Image(systemName: "arrow.right").font(.caption2).foregroundStyle(Theme.textMuted)
+                            Text(t.to).font(.subheadline.weight(.semibold))
+                        }
+                        .foregroundStyle(Theme.textPrimary)
+                        // Two lines — fallback when names are too long
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(t.from).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.textPrimary).lineLimit(1)
+                            HStack(spacing: 4) {
+                                Image(systemName: "arrow.right").font(.caption2).foregroundStyle(Theme.textMuted)
+                                Text(t.to).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.textPrimary).lineLimit(1)
+                            }
+                        }
                     }
-                    .foregroundStyle(Theme.textPrimary)
                     if t.hasParts {
-                        Text("\(t.parts.count) rincian").font(.caption2).foregroundStyle(Theme.textSubtle)
+                        Text("\(t.parts.count) rincian")
+                            .font(.caption2)
+                            .foregroundStyle(Theme.textSubtle)
+                            .padding(.top, 3)
                     }
                 }
                 Spacer()
