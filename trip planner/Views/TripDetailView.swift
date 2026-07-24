@@ -134,7 +134,7 @@ struct TripDetailView: View {
                 .font(.caption.weight(.semibold))
                 .labelStyle(.titleAndIcon)
                 .padding(.horizontal, 12).padding(.vertical, 7)
-                .background(.white.opacity(0.9))
+                .background(.regularMaterial)
                 .foregroundStyle(Theme.textPrimary)
                 .clipShape(Capsule())
         }

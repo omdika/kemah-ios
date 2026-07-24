@@ -99,16 +99,16 @@ struct ChecklistTab: View {
                         .font(.subheadline.weight(.semibold))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 10)
-                        .background(isActive ? Color.white : Color.clear)
+                        .background(isActive ? Theme.surface : Color.clear)
                         .foregroundStyle(isActive ? store.accent.color : Theme.textMuted)
                         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                        .shadow(color: isActive ? .black.opacity(0.12) : .clear, radius: 3, x: 0, y: 1)
+                        .shadow(color: isActive ? .black.opacity(0.10) : .clear, radius: 3, x: 0, y: 1)
                 }
                 .buttonStyle(.plain)
             }
         }
         .padding(3)
-        .background(Color(red: 0.90, green: 0.90, blue: 0.89))
+        .background(Theme.neutralPillBg)
         .clipShape(RoundedRectangle(cornerRadius: 11, style: .continuous))
     }
 
