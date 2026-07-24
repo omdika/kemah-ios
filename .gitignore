@@ -1,0 +1,4 @@
+tripPlannerApi/
+build/
+*.xcuserstate
+xcuserdata/

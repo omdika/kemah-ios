@@ -2,20 +2,37 @@
 //  ContentView.swift
 //  trip planner
 //
-//  Created by handika on 22/07/26.
+//  Root view. Gates on auth (Login vs the main NavigationStack) and hosts the
+//  toast overlay. Navigation routes: trip detail and the split-bill screen.
 //
 
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var store = TripStore(repository: AppConfig.makeRepository())
+    @State private var path: [Route] = []
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        Group {
+            if store.isAuthenticated {
+                NavigationStack(path: $path) {
+                    HomeView(path: $path)
+                        .navigationDestination(for: Route.self) { route in
+                            switch route {
+                            case .trip:
+                                TripDetailView(path: $path)
+                            case .splitBill:
+                                SplitBillView(path: $path)
+                            }
+                        }
+                }
+            } else {
+                LoginView()
+            }
         }
-        .padding()
+        .tint(store.accent.color)
+        .environmentObject(store)
+        .toast($store.toastMessage)
     }
 }
 

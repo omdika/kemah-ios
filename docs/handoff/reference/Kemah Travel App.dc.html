@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <script src="./image-slot.js"></script>
+  <style>
+    a { color: inherit; }
+    a:hover { opacity: 0.85; }
+  </style>
+</helmet>
+<div style="min-height:100vh;width:100%;background:oklch(0.965 0.006 85);display:flex;align-items:center;justify-content:center;padding:56px 24px;box-sizing:border-box;font-family:system-ui, sans-serif;">
+  <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402,874">
+    <div style="position:relative;height:100%;width:100%;background:oklch(0.985 0.006 80);overflow:hidden;display:flex;flex-direction:column;">
+
+      <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1;display:flex;flex-direction:column;overflow:auto;">
+          <div style="height:400px;flex-shrink:0;background:linear-gradient(160deg, oklch(0.68 0.17 45), oklch(0.55 0.16 320));display:flex;align-items:center;justify-content:center;position:relative;">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(115deg, rgba(255,255,255,0.08) 0 18px, rgba(255,255,255,0) 18px 36px);"></div>
+            <div style="position:relative;text-align:center;color:rgba(255,255,255,0.85);font-family:monospace;font-size:12px;letter-spacing:0.4px;padding:0 40px;">ilustrasi: kelompok camping di kaki gunung, tenda &amp; api unggun</div>
+          </div>
+          <div style="flex:1;padding:28px 24px 32px;display:flex;flex-direction:column;gap:8px;">
+            <div style="font-family:ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;font-size:32px;font-weight:700;color:oklch(0.24 0.02 50);">Kemah</div>
+            <div style="font-size:15px;color:oklch(0.5 0.02 50);line-height:1.5;margin-bottom:22px;">Rencanain kemah bareng, tanpa ribet. Checklist, budget, sampe siapa bawa apa — semua kelar di satu tempat.</div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div onClick="{{ login }}" style="display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:16px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.06), 0 8px 20px rgba(0,0,0,0.06);cursor:pointer;">
+                <div style="width:26px;height:26px;border-radius:50%;background:oklch(0.7 0.19 45);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;">G</div>
+                <div style="font-size:15px;font-weight:600;color:oklch(0.24 0.02 50);">Lanjutkan dengan Google</div>
+              </div>
+              <div onClick="{{ login }}" style="display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:16px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.06), 0 8px 20px rgba(0,0,0,0.06);cursor:pointer;">
+                <div style="width:26px;height:26px;border-radius:50%;background:oklch(0.7 0.19 240);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;">f</div>
+                <div style="font-size:15px;font-weight:600;color:oklch(0.24 0.02 50);">Lanjutkan dengan Facebook</div>
+              </div>
+              <div onClick="{{ login }}" style="display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:16px;background:oklch(0.24 0.02 50);cursor:pointer;">
+                <div style="width:26px;height:26px;border-radius:50%;background:#fff;color:oklch(0.24 0.02 50);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;">A</div>
+                <div style="font-size:15px;font-weight:600;color:#fff;">Masuk dengan Apple</div>
+              </div>
+            </div>
+            <div style="text-align:center;font-size:12px;color:oklch(0.6 0.02 50);margin-top:18px;">Dengan masuk, kamu setuju sama Ketentuan &amp; Privasi Kemah.</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+          <div style="padding:58px 24px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+            <div>
+              <div style="font-size:13px;color:oklch(0.55 0.02 50);">Halo, Dinda</div>
+              <div style="font-family:ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;font-size:24px;font-weight:600;color:oklch(0.24 0.02 50);">Trip Kamu</div>
+            </div>
+            <div style="width:40px;height:40px;border-radius:50%;background:oklch(0.72 0.19 45);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;">D</div>
+          </div>
+          <div onClick="{{ toggleConnectivity }}" style="flex-shrink:0;display:flex;align-items:center;gap:8px;padding:6px 24px 14px;cursor:pointer;">
+            <div style="width:8px;height:8px;border-radius:50%;background:{{ connectivityDot }};flex-shrink:0;"></div>
+            <div style="font-size:12px;font-weight:600;color:oklch(0.5 0.02 50);">{{ connectivityLabel }}</div>
+          </div>
+          <div style="flex:1;overflow:auto;padding:6px 24px 100px;display:flex;flex-direction:column;gap:26px;">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:oklch(0.5 0.02 50);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:10px;">Akan Datang</div>
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <sc-for list="{{ upcomingTrips }}" as="upTrip" hint-placeholder-count="1">
+                  <div onClick="{{ upTrip.open }}" style="border-radius:20px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.05), 0 6px 18px rgba(0,0,0,0.05);overflow:hidden;cursor:pointer;">
+                    <div style="height:88px;position:relative;background:linear-gradient(135deg, oklch(0.72 0.19 45), oklch(0.68 0.17 320));">
+                      <image-slot id="{{ upTrip.coverId }}" shape="rect" placeholder="foto trip"></image-slot>
+                    </div>
+                    <div style="padding:14px 16px 16px;">
+                      <div style="font-family:ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;font-size:17px;font-weight:600;color:oklch(0.24 0.02 50);">{{ upTrip.name }}</div>
+                      <div style="font-size:13px;color:oklch(0.55 0.02 50);margin-top:2px;">{{ upTrip.location }} · {{ upTrip.dateLabel }}</div>
+                      <div style="display:flex;gap:6px;margin-top:8px;">
+                        <sc-if value="{{ upTrip.hasMapLink }}" hint-placeholder-val="{{ false }}">
+                          <a href="{{ upTrip.mapLink }}" target="_blank" rel="noopener" onClick="{{ stopRowClick }}" style="width:26px;height:26px;border-radius:50%;background:oklch(0.95 0.02 45);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="oklch(0.55 0.15 45)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 10c0 6-8.5 12-8.5 12S3.5 16 3.5 10a8.5 8.5 0 0 1 17 0z"/><circle cx="12" cy="10" r="2.8"/></svg>
+                          </a>
+                        </sc-if>
+                        <sc-if value="{{ upTrip.hasPhone }}" hint-placeholder-val="{{ false }}">
+                          <a href="{{ upTrip.waLink }}" target="_blank" rel="noopener" onClick="{{ stopRowClick }}" style="width:26px;height:26px;border-radius:50%;background:oklch(0.6 0.15 150);color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">WA</a>
+                        </sc-if>
+                      </div>
+                      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;">
+                        <div style="display:flex;align-items:center;">
+                          <sc-for list="{{ upTrip.participantsPreview }}" as="headP" hint-placeholder-count="3">
+                            <div style="width:26px;height:26px;border-radius:50%;background:{{ headP.color }};border:2px solid #fff;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-left:-8px;">{{ headP.initials }}</div>
+                          </sc-for>
+                        </div>
+                        <div style="font-size:12px;font-weight:700;color:oklch(0.5 0.02 50);">{{ upTrip.checkedCount }}/{{ upTrip.totalCount }} siap</div>
+                      </div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:oklch(0.5 0.02 50);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:10px;">Riwayat</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <sc-for list="{{ pastTrips }}" as="pastTrip" hint-placeholder-count="1">
+                  <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.04);">
+                    <div onClick="{{ pastTrip.open }}" style="flex:1;display:flex;align-items:center;gap:12px;cursor:pointer;">
+                      <div style="width:44px;height:44px;border-radius:12px;background:oklch(0.95 0.02 150);flex-shrink:0;"></div>
+                      <div style="flex:1;">
+                        <div style="font-size:14px;font-weight:600;color:oklch(0.24 0.02 50);">{{ pastTrip.name }}</div>
+                        <div style="font-size:12px;color:oklch(0.55 0.02 50);">{{ pastTrip.dateLabel }} · Selesai</div>
+                      </div>
+                    </div>
+                    <div onClick="{{ pastTrip.shareOpen }}" style="font-size:12px;font-weight:700;color:oklch(0.7 0.19 45);padding:8px 12px;border-radius:10px;background:oklch(0.95 0.03 45);cursor:pointer;flex-shrink:0;">Bagikan</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          <div onClick="{{ openNewTrip }}" style="position:absolute;right:20px;bottom:96px;width:56px;height:56px;border-radius:50%;background:{{ primary }};box-shadow:0 8px 20px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+            <div style="width:20px;height:2.5px;background:#fff;position:absolute;border-radius:2px;"></div>
+            <div style="width:2.5px;height:20px;background:#fff;position:absolute;border-radius:2px;"></div>
+          </div>
+          <div style="flex-shrink:0;display:flex;padding:10px 24px 26px;gap:8px;border-top:1px solid oklch(0.93 0.006 85);background:#fff;">
+            <div style="flex:1;text-align:center;padding:6px;border-radius:12px;">
+              <div style="font-size:12px;font-weight:700;color:{{ primary }};">Trip</div>
+            </div>
+            <div onClick="{{ profileToast }}" style="flex:1;text-align:center;padding:6px;border-radius:12px;cursor:pointer;">
+              <div style="font-size:12px;font-weight:600;color:oklch(0.6 0.02 50);">Profil</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isTrip }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+          <div style="flex-shrink:0;padding:58px 20px 16px;background:linear-gradient(135deg, {{ primary }}, oklch(0.6 0.17 300));position:relative;overflow:hidden;">
+            <image-slot id="{{ currentTrip.coverId }}" shape="rect" style="position:absolute;inset:0;"></image-slot>
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.55));pointer-events:none;"></div>
+            <div style="position:relative;">
+              <div onClick="{{ backHome }}" style="width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-bottom:14px;">
+                <div style="width:9px;height:9px;border-left:2.5px solid #fff;border-bottom:2.5px solid #fff;transform:rotate(45deg) translate(1px,-1px);"></div>
+              </div>
+              <div style="font-family:ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;font-size:22px;font-weight:600;color:#fff;">{{ currentTrip.name }}</div>
+              <div style="font-size:13px;color:rgba(255,255,255,0.85);margin-top:2px;">{{ currentTrip.location }} · {{ currentTrip.dateLabel }}</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;">
+                <div style="display:flex;align-items:center;">
+                  <sc-for list="{{ currentTrip.participantsPreview }}" as="tripHeadP" hint-placeholder-count="4">
+                    <div style="width:28px;height:28px;border-radius:50%;background:{{ tripHeadP.color }};border:2px solid rgba(255,255,255,0.6);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-left:-8px;">{{ tripHeadP.initials }}</div>
+                  </sc-for>
+                </div>
+                <div onClick="{{ openInvite }}" style="font-size:12px;font-weight:700;color:#fff;padding:8px 14px;border-radius:10px;background:rgba(255,255,255,0.22);cursor:pointer;">+ Undang</div>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:12px;">
+                <sc-if value="{{ currentTrip.hasMapLink }}" hint-placeholder-val="{{ false }}">
+                  <a href="{{ currentTrip.mapLink }}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#fff;padding:6px 12px 6px 6px;border-radius:100px;background:rgba(255,255,255,0.18);text-decoration:none;">
+                    <div style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.9);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="{{ primary }}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 10c0 6-8.5 12-8.5 12S3.5 16 3.5 10a8.5 8.5 0 0 1 17 0z"/><circle cx="12" cy="10" r="2.8"/></svg>
+                    </div>
+                    <span>Lihat Peta</span>
+                  </a>
+                </sc-if>
+                <sc-if value="{{ currentTrip.hasPhone }}" hint-placeholder-val="{{ false }}">
+                  <a href="{{ currentTrip.waLink }}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#fff;padding:6px 12px 6px 6px;border-radius:100px;background:rgba(255,255,255,0.18);text-decoration:none;">
+                    <div style="width:22px;height:22px;border-radius:50%;background:oklch(0.6 0.15 150);color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">WA</div>
+                    <span>Chat Admin</span>
+                  </a>
+                </sc-if>
+              </div>
+            </div>
+          </div>
+
+          <div onClick="{{ toggleConnectivity }}" style="flex-shrink:0;display:flex;align-items:center;gap:8px;padding:8px 20px;cursor:pointer;background:#fff;">
+            <div style="width:8px;height:8px;border-radius:50%;background:{{ connectivityDot }};flex-shrink:0;"></div>
+            <div style="font-size:12px;font-weight:600;color:oklch(0.5 0.02 50);">{{ connectivityLabel }}</div>
+          </div>
+
+          <div style="flex-shrink:0;display:flex;gap:6px;padding:0 20px 14px;background:#fff;box-shadow:0 1px 0 oklch(0.93 0.006 85);">
+            <div onClick="{{ setTabChecklist }}" style="flex:1;text-align:center;padding:9px 4px;border-radius:12px;cursor:pointer;background:{{ checklistTabBg }};">
+              <div style="font-size:13px;font-weight:700;color:{{ checklistTabColor }};">Checklist</div>
+            </div>
+            <div onClick="{{ setTabBudget }}" style="flex:1;text-align:center;padding:9px 4px;border-radius:12px;cursor:pointer;background:{{ budgetTabBg }};">
+              <div style="font-size:13px;font-weight:700;color:{{ budgetTabColor }};">Budget</div>
+            </div>
+            <div onClick="{{ setTabPeserta }}" style="flex:1;text-align:center;padding:9px 4px;border-radius:12px;cursor:pointer;background:{{ pesertaTabBg }};">
+              <div style="font-size:13px;font-weight:700;color:{{ pesertaTabColor }};">Peserta</div>
+            </div>
+          </div>
+
+          <div style="flex:1;overflow:auto;padding:18px 20px 32px;">
+            <sc-if value="{{ tabIsChecklist }}" hint-placeholder-val="{{ true }}">
+              <div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                  <div style="font-size:13px;font-weight:700;color:oklch(0.5 0.02 50);">{{ currentTrip.checkedCount }}/{{ currentTrip.totalCount }} beres</div>
+                  <div style="font-size:13px;font-weight:700;color:{{ primary }};">{{ currentTrip.progressPct }}%</div>
+                </div>
+                <div style="height:8px;border-radius:8px;background:oklch(0.93 0.006 85);margin-bottom:20px;overflow:hidden;">
+                  <div style="height:100%;border-radius:8px;background:{{ primary }};width:{{ currentTrip.progressPct }}%;"></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                  <div style="font-family:ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;font-size:15px;font-weight:600;color:oklch(0.24 0.02 50);flex:1;">Perlengkapan Kelompok</div>
+                  <div style="font-size:12px;font-weight:600;color:oklch(0.55 0.02 50);">{{ currentTrip.kelompokChecked }}/{{ currentTrip.kelompokTotal }}</div>
+                </div>
+                <div style="border-radius:16px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.04);overflow:hidden;margin-bottom:14px;">
+                  <sc-for list="{{ currentTrip.kelompokItems }}" as="checkItem" hint-placeholder-count="4">
+                    <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-bottom:1px solid oklch(0.95 0.006 85);">
+                      <div onClick="{{ checkItem.toggle }}" style="width:22px;height:22px;border-radius:7px;border:2px solid {{ checkItem.checkColor }};background:{{ checkItem.checkBg }};color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;cursor:pointer;">{{ checkItem.checkMark }}</div>
+                      <div onClick="{{ checkItem.edit }}" style="flex:1;cursor:pointer;">
+                        <div style="font-size:14px;font-weight:600;color:oklch(0.24 0.02 50);text-decoration:{{ checkItem.strike }};">{{ checkItem.name }} <span style="color:oklch(0.55 0.02 50);font-weight:500;">×{{ checkItem.qty }}</span></div>
+                        <div style="font-size:12px;color:oklch(0.55 0.02 50);margin-top:2px;">{{ checkItem.metaLine }}</div>
+                      </div>
+                      <div onClick="{{ checkItem.remove }}" style="width:22px;height:22px;border-radius:50%;color:oklch(0.65 0.02 50);font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;">×</div>
+                    </div>
+                  </sc-for>
+                </div>
+                <div onClick="{{ currentTrip.addKelompokItem }}" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:16px;border:1.5px dashed oklch(0.85 0.006 85);cursor:pointer;margin-bottom:24px;">
+                  <div style="font-size:15px;font-weight:700;color:{{ primary }};">+</div>
+                  <div style="font-size:13px;font-weight:700;color:{{ primary }};">Tambah Barang Kelompok</div>
+                </div>
+
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                  <div style="font-family:ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;font-size:15px;font-weight:600;color:oklch(0.24 0.02 50);flex:1;">Perlengkapan Pribadi</div>
+                  <div style="font-size:12px;font-weight:600;color:oklch(0.55 0.02 50);">{{ currentTrip.pribadiChecked }}/{{ currentTrip.pribadiTotal }}</div>
+                </div>
+                <div style="font-size:11px;color:oklch(0.6 0.02 50);margin-bottom:8px;">Barang yang dibawa masing-masing peserta sendiri — nggak perlu PIC.</div>
+                <div style="border-radius:16px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.04);overflow:hidden;margin-bottom:14px;">
+                  <sc-for list="{{ currentTrip.pribadiItems }}" as="checkItem" hint-placeholder-count="3">
+                    <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-bottom:1px solid oklch(0.95 0.006 85);">
+                      <div onClick="{{ checkItem.toggle }}" style="width:22px;height:22px;border-radius:7px;border:2px solid {{ checkItem.checkColor }};background:{{ checkItem.checkBg }};color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;cursor:pointer;">{{ checkItem.checkMark }}</div>
+                      <div onClick="{{ checkItem.edit }}" style="flex:1;cursor:pointer;">
+                        <div style="font-size:14px;font-weight:600;color:oklch(0.24 0.02 50);text-decoration:{{ checkItem.strike }};">{{ checkItem.name }} <span style="color:oklch(0.55 0.02 50);font-weight:500;">×{{ checkItem.qty }}</span></div>
+                        <sc-if value="{{ checkItem.hasMetaLine }}" hint-placeholder-val="{{ false }}">
+                          <div style="font-size:12px;color:oklch(0.55 0.02 50);margin-top:2px;">{{ checkItem.metaLine }}</div>
+                        </sc-if>
+                      </div>
+                      <div onClick="{{ checkItem.remove }}" style="width:22px;height:22px;border-radius:50%;color:oklch(0.65 0.02 50);font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;">×</div>
+                    </div>
+                  </sc-for>
+                </div>
+                <div onClick="{{ currentTrip.addPribadiItem }}" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:16px;border:1.5px dashed oklch(0.85 0.006 85);cursor:pointer;">
+                  <div style="font-size:15px;font-weight:700;color:{{ primary }};">+</div>
+                  <div style="font-size:13px;font-weight:700;color:{{ primary }};">Tambah Barang Pribadi</div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ tabIsBudget }}" hint-placeholder-val="{{ false }}">
+              <div>
+                <div style="border-radius:18px;padding:18px;background:linear-gradient(135deg, {{ primary }}, oklch(0.6 0.17 300));margin-bottom:20px;">
+                  <div style="display:flex;gap:6px;padding:3px;border-radius:10px;background:rgba(255,255,255,0.2);margin-bottom:14px;">
+                    <div onClick="{{ currentTrip.setModeAuto }}" style="flex:1;text-align:center;padding:7px 4px;border-radius:8px;cursor:pointer;background:{{ modeAutoBg }};">
+                      <div style="font-size:12px;font-weight:700;color:{{ modeAutoFg }};">Otomatis</div>
+                    </div>
+                    <div onClick="{{ currentTrip.setModeManual }}" style="flex:1;text-align:center;padding:7px 4px;border-radius:8px;cursor:pointer;background:{{ modeManualBg }};">
+                      <div style="font-size:12px;font-weight:700;color:{{ modeManualFg }};">Manual</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+                    <div style="font-size:12px;color:rgba(255,255,255,0.85);">Total Budget</div>
+                    <sc-if value="{{ currentTrip.isAutoBudget }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-size:11px;color:rgba(255,255,255,0.7);">Otomatis dari rincian</div>
+                    </sc-if>
+                    <sc-if value="{{ currentTrip.isManualBudget }}" hint-placeholder-val="{{ true }}">
+                      <div onClick="{{ currentTrip.editBudgetTarget }}" style="font-size:12px;font-weight:700;color:#fff;padding:5px 10px;border-radius:8px;background:rgba(255,255,255,0.22);cursor:pointer;">Edit</div>
+                    </sc-if>
+                  </div>
+                  <div style="font-family:ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;font-size:26px;font-weight:600;color:#fff;margin-top:2px;">{{ currentTrip.budgetTargetLabel }}</div>
+                  <div style="height:7px;border-radius:8px;background:rgba(255,255,255,0.3);margin-top:14px;overflow:hidden;">
+                    <div style="height:100%;border-radius:8px;background:#fff;width:{{ currentTrip.budgetPct }}%;"></div>
+                  </div>
+                  <div style="font-size:12px;color:rgba(255,255,255,0.85);margin-top:8px;">Terpakai {{ currentTrip.budgetSpentLabel }} ({{ currentTrip.budgetPct }}%)</div>
+                  <sc-if value="{{ currentTrip.budgetOver }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:12px;font-weight:700;color:#fff;background:rgba(0,0,0,0.2);border-radius:8px;padding:6px 10px;margin-top:8px;display:inline-block;">{{ currentTrip.budgetOverLabel }}</div>
+                  </sc-if>
+                </div>
+                <div style="font-size:13px;font-weight:700;color:oklch(0.5 0.02 50);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Rincian Pengeluaran</div>
+                <div style="border-radius:16px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.04);overflow:hidden;margin-bottom:12px;">
+                  <sc-for list="{{ currentTrip.budgetItems }}" as="budgetItem" hint-placeholder-count="4">
+                    <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid oklch(0.95 0.006 85);">
+                      <div onClick="{{ budgetItem.edit }}" style="flex:1;cursor:pointer;">
+                        <div style="font-size:14px;font-weight:600;color:oklch(0.24 0.02 50);">{{ budgetItem.name }}</div>
+                        <div style="font-size:12px;color:oklch(0.55 0.02 50);margin-top:2px;">{{ budgetItem.payerLine }}
+                          <span style="font-size:10px;font-weight:700;color:{{ budgetItem.splitTagFg }};background:{{ budgetItem.splitTagBg }};padding:2px 7px;border-radius:100px;margin-left:6px;">{{ budgetItem.splitTagLabel }}</span>
+                        </div>
+                      </div>
+                      <div style="font-size:13px;font-weight:700;color:oklch(0.45 0.02 50);">{{ budgetItem.priceLabel }}</div>
+                      <div onClick="{{ budgetItem.remove }}" style="width:22px;height:22px;border-radius:50%;color:oklch(0.65 0.02 50);font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;">×</div>
+                    </div>
+                  </sc-for>
+                </div>
+                <div onClick="{{ currentTrip.addBudgetItem }}" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:16px;border:1.5px dashed oklch(0.85 0.006 85);cursor:pointer;margin-bottom:22px;">
+                  <div style="font-size:15px;font-weight:700;color:{{ primary }};">+</div>
+                  <div style="font-size:13px;font-weight:700;color:{{ primary }};">Tambah Pengeluaran</div>
+                </div>
+                <sc-if value="{{ splitBillEnabled }}" hint-placeholder-val="{{ true }}">
+                  <div onClick="{{ currentTrip.openSplitBill }}" style="display:flex;align-items:center;gap:12px;padding:16px;border-radius:16px;background:{{ primarySoft }};cursor:pointer;">
+                    <div style="flex:1;">
+                      <div style="font-size:15px;font-weight:700;color:{{ primary }};">Split Bill</div>
+                      <div style="font-size:12px;color:oklch(0.5 0.02 50);margin-top:2px;">Bagi rata & lihat siapa transfer ke siapa</div>
+                    </div>
+                    <div style="font-size:18px;font-weight:700;color:{{ primary }};">›</div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ tabIsPeserta }}" hint-placeholder-val="{{ false }}">
+              <div>
+                <div style="border-radius:16px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.04);overflow:hidden;margin-bottom:16px;">
+                  <sc-for list="{{ currentTrip.participants }}" as="pesertaRow" hint-placeholder-count="5">
+                    <div onClick="{{ pesertaRow.editRole }}" style="display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:1px solid oklch(0.95 0.006 85);cursor:pointer;">
+                      <div style="width:36px;height:36px;border-radius:50%;background:{{ pesertaRow.color }};color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ pesertaRow.initials }}</div>
+                      <div style="flex:1;">
+                        <div style="font-size:14px;font-weight:600;color:oklch(0.24 0.02 50);">{{ pesertaRow.name }}</div>
+                        <div style="font-size:12px;color:oklch(0.55 0.02 50);">{{ pesertaRow.picForLabel }} · {{ pesertaRow.headcountLabel }}</div>
+                      </div>
+                      <div style="font-size:12px;font-weight:700;color:{{ primary }};flex-shrink:0;">Edit</div>
+                    </div>
+                  </sc-for>
+                </div>
+                <div onClick="{{ openInvite }}" style="text-align:center;padding:13px;border-radius:14px;background:{{ primarySoft }};cursor:pointer;">
+                  <div style="font-size:14px;font-weight:700;color:{{ primary }};">Undang Teman</div>
+                </div>
+                <sc-if value="{{ currentTrip.isDone }}" hint-placeholder-val="{{ false }}">
+                  <div onClick="{{ openShare }}" style="text-align:center;padding:14px;border-radius:14px;background:{{ primary }};cursor:pointer;margin-top:12px;">
+                    <div style="font-size:14px;font-weight:700;color:#fff;">Bagikan Ringkasan Trip</div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isSplitBill }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+          <div style="flex-shrink:0;padding:58px 20px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid oklch(0.93 0.006 85);">
+            <div onClick="{{ backFromSplitBill }}" style="font-size:14px;font-weight:700;color:{{ primary }};cursor:pointer;flex-shrink:0;">‹ Kembali</div>
+            <div style="flex:1;text-align:center;font-family:ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;font-size:17px;font-weight:700;color:oklch(0.24 0.02 50);margin-right:40px;">Split Bill</div>
+          </div>
+          <div style="flex:1;overflow:auto;padding:18px 20px 32px;">
+            <div style="border-radius:16px;padding:16px;background:linear-gradient(135deg, {{ primary }}, oklch(0.6 0.17 300));margin-bottom:22px;text-align:center;">
+              <div style="font-size:13px;font-weight:600;color:#fff;">Dibagi {{ currentTrip.participantCount }} orang · {{ currentTrip.equalShareLabel }} / orang</div>
+            </div>
+            <div style="font-size:13px;font-weight:700;color:oklch(0.5 0.02 50);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Ringkasan per Orang</div>
+            <div style="border-radius:16px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.04);overflow:hidden;margin-bottom:22px;">
+              <sc-for list="{{ currentTrip.perPerson }}" as="pp" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;gap:12px;padding:13px 14px;border-bottom:1px solid oklch(0.95 0.006 85);">
+                  <div style="width:36px;height:36px;border-radius:50%;background:{{ pp.color }};color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ pp.initials }}</div>
+                  <div style="flex:1;">
+                    <div style="font-size:14px;font-weight:600;color:oklch(0.24 0.02 50);">{{ pp.name }}</div>
+                    <div style="font-size:12px;color:oklch(0.55 0.02 50);">Bayar {{ pp.bayarLabel }} · jatah {{ pp.jatahLabel }}</div>
+                  </div>
+                  <div style="font-size:12px;font-weight:700;color:{{ pp.pillColor }};background:{{ pp.pillBg }};padding:6px 12px;border-radius:100px;flex-shrink:0;">{{ pp.pillLabel }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="font-size:13px;font-weight:700;color:oklch(0.5 0.02 50);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Transfer yang Perlu Dilakukan</div>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:22px;">
+              <sc-for list="{{ transfers }}" as="tr" hint-placeholder-count="3">
+                <div style="border-radius:14px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.04);opacity:{{ tr.rowOpacity }};overflow:hidden;">
+                  <div style="display:flex;align-items:center;gap:12px;padding:13px 14px;">
+                    <div onClick="{{ tr.toggle }}" style="width:20px;height:20px;border-radius:50%;border:2px solid {{ primary }};background:{{ tr.checkBg }};flex-shrink:0;cursor:pointer;"></div>
+                    <div onClick="{{ tr.toggleExpand }}" style="flex:1;font-size:14px;color:oklch(0.24 0.02 50);text-decoration:{{ tr.strike }};cursor:pointer;"><b>{{ tr.from }}</b> bayar ke <b>{{ tr.to }}</b></div>
+                    <div onClick="{{ tr.toggleExpand }}" style="font-size:14px;font-weight:700;color:oklch(0.24 0.02 50);text-decoration:{{ tr.strike }};cursor:pointer;">{{ tr.amountLabel }}</div>
+                  </div>
+                  <sc-if value="{{ tr.expanded }}" hint-placeholder-val="{{ false }}">
+                    <div style="padding:0 14px 12px 46px;display:flex;flex-direction:column;gap:4px;">
+                      <sc-for list="{{ tr.parts }}" as="part" hint-placeholder-count="2">
+                        <div style="display:flex;justify-content:space-between;font-size:12px;color:oklch(0.55 0.02 50);">
+                          <div>{{ part.label }}</div>
+                          <div>{{ part.amountLabel }}</div>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+            <div onClick="{{ openShare }}" style="text-align:center;padding:15px;border-radius:14px;background:oklch(0.24 0.02 50);cursor:pointer;">
+              <div style="font-size:14px;font-weight:700;color:#fff;">Bagikan Ringkasan</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showRoleSheet }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;justify-content:flex-end;">
+          <div onClick="{{ closeRoleSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,0.4);"></div>
+          <div style="position:relative;background:#fff;border-radius:26px 26px 0 0;padding:20px 22px 30px;animation:sheetUp 0.25s ease-out;">
+            <div style="width:36px;height:4px;border-radius:4px;background:oklch(0.9 0.006 85);margin:0 auto 16px;"></div>
+            <div style="font-family:ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;font-size:19px;font-weight:600;color:oklch(0.24 0.02 50);margin-bottom:2px;">Edit Peran</div>
+            <div style="font-size:13px;color:oklch(0.55 0.02 50);margin-bottom:16px;">{{ roleName }}</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+              <sc-for list="{{ rolePresets }}" as="preset" hint-placeholder-count="6">
+                <div onClick="{{ preset.select }}" style="padding:8px 14px;border-radius:100px;background:{{ preset.bg }};cursor:pointer;">
+                  <div style="font-size:13px;font-weight:700;color:{{ preset.fg }};white-space:nowrap;">{{ preset.label }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <input value="{{ roleInput }}" onChange="{{ onRoleInputChange }}" placeholder="mis. PIC Dokumentasi" style="width:100%;box-sizing:border-box;border:1.5px solid oklch(0.9 0.006 85);border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;outline:none;"/>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding:12px 14px;border:1.5px solid oklch(0.9 0.006 85);border-radius:12px;">
+              <div style="font-size:14px;color:oklch(0.4 0.02 50);">Jumlah orang</div>
+              <div style="display:flex;align-items:center;gap:14px;">
+                <div onClick="{{ decHeadcount }}" style="width:28px;height:28px;border-radius:50%;background:oklch(0.95 0.006 85);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:oklch(0.4 0.02 50);cursor:pointer;">−</div>
+                <div style="font-size:15px;font-weight:700;color:oklch(0.24 0.02 50);min-width:16px;text-align:center;">{{ roleHeadcount }}</div>
+                <div onClick="{{ incHeadcount }}" style="width:28px;height:28px;border-radius:50%;background:oklch(0.95 0.006 85);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:oklch(0.4 0.02 50);cursor:pointer;">+</div>
+              </div>
+            </div>
+            <div onClick="{{ saveRole }}" style="text-align:center;padding:14px;border-radius:14px;background:{{ roleSaveBg }};margin-top:16px;cursor:pointer;">
+              <div style="font-size:14px;font-weight:700;color:#fff;">Simpan</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showNewTripSheet }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;justify-content:flex-end;">
+          <div onClick="{{ closeNewTrip }}" style="position:absolute;inset:0;background:rgba(0,0,0,0.4);"></div>
+          <div style="position:relative;background:#fff;border-radius:26px 26px 0 0;padding:20px 22px 30px;animation:sheetUp 0.25s ease-out;">
+            <div style="width:36px;height:4px;border-radius:4px;background:oklch(0.9 0.006 85);margin:0 auto 16px;"></div>
+            <div style="font-family:ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;font-size:19px;font-weight:600;color:oklch(0.24 0.02 50);margin-bottom:16px;">Buat Trip Baru</div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="width:100%;height:110px;border-radius:14px;overflow:hidden;">
+                <image-slot id="{{ newTripCoverId }}" shape="rect" placeholder="Foto sampul trip"></image-slot>
+              </div>
+              <input value="{{ newTripName }}" onChange="{{ onNewTripNameChange }}" placeholder="Nama trip, mis. Camping Kawah Putih" style="border:1.5px solid oklch(0.9 0.006 85);border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;outline:none;"/>
+              <input value="{{ newTripLocation }}" onChange="{{ onNewTripLocationChange }}" placeholder="Lokasi" style="border:1.5px solid oklch(0.9 0.006 85);border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;outline:none;"/>
+              <input value="{{ newTripDate }}" onChange="{{ onNewTripDateChange }}" type="date" style="border:1.5px solid oklch(0.9 0.006 85);border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;outline:none;color:oklch(0.24 0.02 50);"/>
+              <input value="{{ newTripMapLink }}" onChange="{{ onNewTripMapLinkChange }}" placeholder="Link Google Maps (opsional)" style="border:1.5px solid oklch(0.9 0.006 85);border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;outline:none;"/>
+              <input value="{{ newTripPhone }}" onChange="{{ onNewTripPhoneChange }}" placeholder="Nomor HP kontak (mis. 081234567890)" style="border:1.5px solid oklch(0.9 0.006 85);border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;outline:none;"/>
+            </div>
+            <div onClick="{{ saveNewTrip }}" style="text-align:center;padding:14px;border-radius:14px;background:{{ newTripSaveBg }};margin-top:18px;cursor:pointer;">
+              <div style="font-size:14px;font-weight:700;color:#fff;">Simpan Trip</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showBudgetTargetSheet }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;justify-content:flex-end;">
+          <div onClick="{{ closeBudgetTargetSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,0.4);"></div>
+          <div style="position:relative;background:#fff;border-radius:26px 26px 0 0;padding:20px 22px 30px;animation:sheetUp 0.25s ease-out;">
+            <div style="width:36px;height:4px;border-radius:4px;background:oklch(0.9 0.006 85);margin:0 auto 16px;"></div>
+            <div style="font-family:ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;font-size:19px;font-weight:600;color:oklch(0.24 0.02 50);margin-bottom:16px;">Edit Total Budget</div>
+            <input value="{{ budgetTargetInput }}" onChange="{{ onBudgetTargetChange }}" placeholder="Total budget (Rp)" style="width:100%;box-sizing:border-box;border:1.5px solid oklch(0.9 0.006 85);border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;outline:none;"/>
+            <div onClick="{{ saveBudgetTarget }}" style="text-align:center;padding:14px;border-radius:14px;background:{{ primary }};margin-top:18px;cursor:pointer;">
+              <div style="font-size:14px;font-weight:700;color:#fff;">Simpan</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showBudgetItemSheet }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;justify-content:flex-end;">
+          <div onClick="{{ closeBudgetItemSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,0.4);"></div>
+          <div style="position:relative;background:#fff;border-radius:26px 26px 0 0;padding:20px 22px 30px;animation:sheetUp 0.25s ease-out;">
+            <div style="width:36px;height:4px;border-radius:4px;background:oklch(0.9 0.006 85);margin:0 auto 16px;"></div>
+            <div style="font-family:ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;font-size:19px;font-weight:600;color:oklch(0.24 0.02 50);margin-bottom:16px;">{{ budgetItemSheetTitle }}</div>
+            <div style="display:flex;gap:6px;padding:3px;border-radius:12px;background:oklch(0.95 0.006 85);margin-bottom:14px;">
+              <div onClick="{{ setSplitModeOrang }}" style="flex:1;text-align:center;padding:9px 4px;border-radius:9px;cursor:pointer;background:{{ splitModeOrangBg }};">
+                <div style="font-size:13px;font-weight:700;color:{{ splitModeOrangFg }};">Per Orang</div>
+              </div>
+              <div onClick="{{ setSplitModePic }}" style="flex:1;text-align:center;padding:9px 4px;border-radius:9px;cursor:pointer;background:{{ splitModePicBg }};">
+                <div style="font-size:13px;font-weight:700;color:{{ splitModePicFg }};">Per PIC</div>
+              </div>
+            </div>
+            <div style="font-size:11px;color:oklch(0.55 0.02 50);margin-bottom:12px;margin-top:-6px;">Per Orang: dibagi rata ke semua peserta sesuai jumlah orang. Per PIC: dibagi rata ke tiap PIC, jumlah orang per PIC diabaikan.</div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <input value="{{ budgetItemName }}" onChange="{{ onBudgetItemNameChange }}" onFocus="{{ closeBudgetPicDropdown }}" placeholder="Nama pengeluaran, mis. Bensin" style="border:1.5px solid oklch(0.9 0.006 85);border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;outline:none;"/>
+              <div style="display:flex;gap:8px;">
+                <input value="{{ budgetItemQty }}" onChange="{{ onBudgetItemQtyChange }}" placeholder="Qty (opsional)" style="flex:1;min-width:0;border:1.5px solid oklch(0.9 0.006 85);border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;outline:none;"/>
+                <input value="{{ budgetItemUnitPrice }}" onChange="{{ onBudgetItemUnitPriceChange }}" placeholder="Harga satuan" style="flex:1;min-width:0;border:1.5px solid oklch(0.9 0.006 85);border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;outline:none;"/>
+              </div>
+              <input value="{{ budgetItemPrice }}" onChange="{{ onBudgetItemPriceChange }}" onFocus="{{ closeBudgetPicDropdown }}" placeholder="Jumlah (Rp)" style="border:1.5px solid oklch(0.9 0.006 85);border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;outline:none;"/>
+              <div style="position:relative;">
+                <input value="{{ budgetItemPaidBy }}" onChange="{{ onBudgetItemPaidByChange }}" onFocus="{{ openBudgetPaidByDropdown }}" placeholder="Dibayar oleh" style="width:100%;box-sizing:border-box;border:1.5px solid oklch(0.9 0.006 85);border-radius:12px;padding:12px 40px 12px 14px;font-size:14px;font-family:inherit;outline:none;"/>
+                <div onClick="{{ openBudgetPaidByDropdown }}" style="position:absolute;right:14px;top:0;bottom:0;display:flex;align-items:center;color:oklch(0.6 0.02 50);font-size:11px;cursor:pointer;">▾</div>
+                <sc-if value="{{ showBudgetPaidByDropdown }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;left:0;right:0;top:calc(100% + 6px);background:#fff;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08);max-height:190px;overflow:auto;z-index:6;">
+                    <sc-for list="{{ budgetPaidBySuggestions }}" as="paidByOpt" hint-placeholder-count="4">
+                      <div onClick="{{ paidByOpt.select }}" style="padding:11px 14px;font-size:14px;color:oklch(0.24 0.02 50);cursor:pointer;border-bottom:1px solid oklch(0.95 0.006 85);">{{ paidByOpt.name }}</div>
+                    </sc-for>
+                    <sc-if value="{{ noBudgetPaidBySuggestions }}" hint-placeholder-val="{{ false }}">
+                      <div style="padding:11px 14px;font-size:12px;color:oklch(0.55 0.02 50);">Tidak ada di daftar peserta — akan disimpan sebagai nama baru.</div>
+                    </sc-if>
+                  </div>
+                </sc-if>
+              </div>
+              <sc-if value="{{ isPicSplitMode }}" hint-placeholder-val="{{ false }}">
+                <div style="position:relative;">
+                  <input value="{{ budgetItemPic }}" onChange="{{ onBudgetItemPicChange }}" onFocus="{{ openBudgetPicDropdown }}" placeholder="Untuk siapa (opsional, jika beda dari yang bayar)" style="width:100%;box-sizing:border-box;border:1.5px solid oklch(0.9 0.006 85);border-radius:12px;padding:12px 40px 12px 14px;font-size:14px;font-family:inherit;outline:none;"/>
+                  <div onClick="{{ openBudgetPicDropdown }}" style="position:absolute;right:14px;top:0;bottom:0;display:flex;align-items:center;color:oklch(0.6 0.02 50);font-size:11px;cursor:pointer;">▾</div>
+                  <sc-if value="{{ showBudgetPicDropdown }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:absolute;left:0;right:0;top:calc(100% + 6px);background:#fff;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08);max-height:190px;overflow:auto;z-index:5;">
+                      <sc-for list="{{ budgetPicSuggestions }}" as="budgetPicOpt" hint-placeholder-count="4">
+                        <div onClick="{{ budgetPicOpt.select }}" style="padding:11px 14px;font-size:14px;color:oklch(0.24 0.02 50);cursor:pointer;border-bottom:1px solid oklch(0.95 0.006 85);">{{ budgetPicOpt.name }}</div>
+                      </sc-for>
+                      <sc-if value="{{ noBudgetPicSuggestions }}" hint-placeholder-val="{{ false }}">
+                        <div style="padding:11px 14px;font-size:12px;color:oklch(0.55 0.02 50);">Tidak ada di daftar peserta — akan disimpan sebagai nama baru.</div>
+                      </sc-if>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-if>
+            </div>
+            <div onClick="{{ saveBudgetItemSheet }}" style="text-align:center;padding:14px;border-radius:14px;background:{{ budgetItemSaveBg }};margin-top:18px;cursor:pointer;">
+              <div style="font-size:14px;font-weight:700;color:#fff;">Simpan</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showItemSheet }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;justify-content:flex-end;">
+          <div onClick="{{ closeItemSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,0.4);"></div>
+          <div style="position:relative;background:#fff;border-radius:26px 26px 0 0;padding:20px 22px 30px;animation:sheetUp 0.25s ease-out;max-height:80%;overflow:auto;">
+            <div style="width:36px;height:4px;border-radius:4px;background:oklch(0.9 0.006 85);margin:0 auto 16px;"></div>
+            <div style="font-family:ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;font-size:19px;font-weight:600;color:oklch(0.24 0.02 50);margin-bottom:16px;">{{ itemSheetTitle }}</div>
+            <div style="display:flex;gap:6px;padding:3px;border-radius:12px;background:oklch(0.95 0.006 85);margin-bottom:14px;">
+              <div onClick="{{ setItemTypeKelompok }}" style="flex:1;text-align:center;padding:9px 4px;border-radius:9px;cursor:pointer;background:{{ itemTypeKelompokBg }};">
+                <div style="font-size:13px;font-weight:700;color:{{ itemTypeKelompokFg }};">Kelompok</div>
+              </div>
+              <div onClick="{{ setItemTypePribadi }}" style="flex:1;text-align:center;padding:9px 4px;border-radius:9px;cursor:pointer;background:{{ itemTypePribadiBg }};">
+                <div style="font-size:13px;font-weight:700;color:{{ itemTypePribadiFg }};">Pribadi</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <input value="{{ itemName }}" onChange="{{ onItemNameChange }}" onFocus="{{ closePicDropdown }}" placeholder="Nama barang" style="border:1.5px solid oklch(0.9 0.006 85);border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;outline:none;"/>
+              <input value="{{ itemQty }}" onChange="{{ onItemQtyChange }}" onFocus="{{ closePicDropdown }}" placeholder="Qty" style="border:1.5px solid oklch(0.9 0.006 85);border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;outline:none;"/>
+              <sc-if value="{{ itemShowPic }}" hint-placeholder-val="{{ true }}">
+                <div style="position:relative;">
+                  <input value="{{ itemPic }}" onChange="{{ onItemPicChange }}" onFocus="{{ openPicDropdown }}" placeholder="PIC (siapa yang bawa)" style="width:100%;box-sizing:border-box;border:1.5px solid oklch(0.9 0.006 85);border-radius:12px;padding:12px 40px 12px 14px;font-size:14px;font-family:inherit;outline:none;"/>
+                  <div onClick="{{ openPicDropdown }}" style="position:absolute;right:14px;top:0;bottom:0;display:flex;align-items:center;color:oklch(0.6 0.02 50);font-size:11px;cursor:pointer;">▾</div>
+                  <sc-if value="{{ showPicDropdown }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:absolute;left:0;right:0;top:calc(100% + 6px);background:#fff;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.08);max-height:190px;overflow:auto;z-index:5;">
+                      <sc-for list="{{ picSuggestions }}" as="picOpt" hint-placeholder-count="4">
+                        <div onClick="{{ picOpt.select }}" style="padding:11px 14px;font-size:14px;color:oklch(0.24 0.02 50);cursor:pointer;border-bottom:1px solid oklch(0.95 0.006 85);">{{ picOpt.name }}</div>
+                      </sc-for>
+                      <sc-if value="{{ noPicSuggestions }}" hint-placeholder-val="{{ false }}">
+                        <div style="padding:11px 14px;font-size:12px;color:oklch(0.55 0.02 50);">Tidak ada di daftar peserta — akan disimpan sebagai PIC baru.</div>
+                      </sc-if>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-if>
+              <input value="{{ itemNote }}" onChange="{{ onItemNoteChange }}" onFocus="{{ closePicDropdown }}" placeholder="Catatan (opsional)" style="border:1.5px solid oklch(0.9 0.006 85);border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;outline:none;"/>
+            </div>
+            <div onClick="{{ saveItemSheet }}" style="text-align:center;padding:14px;border-radius:14px;background:{{ itemSaveBg }};margin-top:18px;cursor:pointer;">
+              <div style="font-size:14px;font-weight:700;color:#fff;">Simpan</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showInviteSheet }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;justify-content:flex-end;">
+          <div onClick="{{ closeInvite }}" style="position:absolute;inset:0;background:rgba(0,0,0,0.4);"></div>
+          <div style="position:relative;background:#fff;border-radius:26px 26px 0 0;padding:20px 22px 30px;animation:sheetUp 0.25s ease-out;">
+            <div style="width:36px;height:4px;border-radius:4px;background:oklch(0.9 0.006 85);margin:0 auto 16px;"></div>
+            <div style="font-family:ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;font-size:19px;font-weight:600;color:oklch(0.24 0.02 50);margin-bottom:6px;">Undang Teman</div>
+            <div style="font-size:13px;color:oklch(0.55 0.02 50);margin-bottom:16px;">Siapa pun dengan link ini bisa gabung trip {{ currentTrip.name }}.</div>
+            <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;background:oklch(0.97 0.006 85);">
+              <div style="flex:1;font-size:13px;color:oklch(0.4 0.02 50);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ currentTrip.inviteLink }}</div>
+              <div onClick="{{ copyInviteLink }}" style="font-size:13px;font-weight:700;color:{{ primary }};flex-shrink:0;cursor:pointer;">Salin</div>
+            </div>
+            <div onClick="{{ shareInviteWhatsapp }}" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;background:oklch(0.95 0.05 150);margin-top:10px;cursor:pointer;">
+              <div style="width:26px;height:26px;border-radius:50%;background:oklch(0.6 0.15 150);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;">WA</div>
+              <div style="font-size:14px;font-weight:600;color:oklch(0.35 0.1 150);">Bagikan Link via WhatsApp</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showShareSheet }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;justify-content:flex-end;">
+          <div onClick="{{ closeShare }}" style="position:absolute;inset:0;background:rgba(0,0,0,0.4);"></div>
+          <div style="position:relative;background:#fff;border-radius:26px 26px 0 0;padding:20px 22px 30px;animation:sheetUp 0.25s ease-out;">
+            <div style="width:36px;height:4px;border-radius:4px;background:oklch(0.9 0.006 85);margin:0 auto 16px;"></div>
+            <div style="border-radius:20px;overflow:hidden;background:linear-gradient(150deg, {{ primary }}, oklch(0.55 0.16 320));padding:20px;margin-bottom:16px;">
+              <div style="font-size:11px;color:rgba(255,255,255,0.75);text-transform:uppercase;letter-spacing:0.5px;">Ringkasan Trip</div>
+              <div style="font-family:ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;font-size:21px;font-weight:600;color:#fff;margin-top:4px;">{{ currentTrip.name }}</div>
+              <div style="font-size:13px;color:rgba(255,255,255,0.85);margin-top:2px;">{{ currentTrip.location }} · {{ currentTrip.dateLabel }}</div>
+              <div style="display:flex;gap:8px;margin-top:14px;">
+                <div style="flex:1;aspect-ratio:1;border-radius:10px;background:repeating-linear-gradient(120deg, rgba(255,255,255,0.18) 0 8px, rgba(255,255,255,0.08) 8px 16px);display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:9px;color:rgba(255,255,255,0.7);">foto</div>
+                <div style="flex:1;aspect-ratio:1;border-radius:10px;background:repeating-linear-gradient(120deg, rgba(255,255,255,0.18) 0 8px, rgba(255,255,255,0.08) 8px 16px);display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:9px;color:rgba(255,255,255,0.7);">foto</div>
+                <div style="flex:1;aspect-ratio:1;border-radius:10px;background:repeating-linear-gradient(120deg, rgba(255,255,255,0.18) 0 8px, rgba(255,255,255,0.08) 8px 16px);display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:9px;color:rgba(255,255,255,0.7);">foto</div>
+              </div>
+              <div style="display:flex;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.25);">
+                <div style="flex:1;">
+                  <div style="font-size:15px;font-weight:700;color:#fff;">{{ currentTrip.participants.length }}</div>
+                  <div style="font-size:10px;color:rgba(255,255,255,0.75);">Peserta</div>
+                </div>
+                <div style="flex:1;">
+                  <div style="font-size:15px;font-weight:700;color:#fff;">{{ currentTrip.budgetTargetLabel }}</div>
+                  <div style="font-size:10px;color:rgba(255,255,255,0.75);">Total Budget</div>
+                </div>
+                <div style="flex:1;">
+                  <div style="font-size:15px;font-weight:700;color:#fff;">{{ currentTrip.progressPct }}%</div>
+                  <div style="font-size:10px;color:rgba(255,255,255,0.75);">Checklist</div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;gap:14px;justify-content:center;">
+              <div onClick="{{ shareWhatsapp }}" style="text-align:center;cursor:pointer;">
+                <div style="width:48px;height:48px;border-radius:50%;background:oklch(0.72 0.17 150);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;">W</div>
+                <div style="font-size:11px;color:oklch(0.5 0.02 50);">WhatsApp</div>
+              </div>
+              <div onClick="{{ shareInstagram }}" style="text-align:center;cursor:pointer;">
+                <div style="width:48px;height:48px;border-radius:50%;background:oklch(0.65 0.16 320);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;">I</div>
+                <div style="font-size:11px;color:oklch(0.5 0.02 50);">Instagram</div>
+              </div>
+              <div onClick="{{ shareX }}" style="text-align:center;cursor:pointer;">
+                <div style="width:48px;height:48px;border-radius:50%;background:oklch(0.3 0.01 50);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;">X</div>
+                <div style="font-size:11px;color:oklch(0.5 0.02 50);">X</div>
+              </div>
+              <div onClick="{{ copyShareLink }}" style="text-align:center;cursor:pointer;">
+                <div style="width:48px;height:48px;border-radius:50%;background:oklch(0.9 0.006 85);color:oklch(0.4 0.02 50);font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </div>
+                <div style="font-size:10px;color:oklch(0.5 0.02 50);">Salin Link</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:50%;bottom:110px;transform:translateX(-50%);z-index:60;background:oklch(0.24 0.02 50);color:#fff;font-size:13px;font-weight:600;padding:10px 18px;border-radius:100px;animation:toastIn 0.2s ease-out;white-space:nowrap;box-shadow:0 8px 20px rgba(0,0,0,0.25);">{{ toastMsg }}</div>
+      </sc-if>
+
+    </div>
+  </x-import>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accentTheme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;orange&quot;,&quot;options&quot;:[&quot;orange&quot;,&quot;green&quot;,&quot;blue&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Tema&quot;},&quot;splitBillEnabled&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Budget&quot;},&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;login&quot;,&quot;options&quot;:[&quot;login&quot;,&quot;home&quot;,&quot;trip&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Demo&quot;}}">
+const PALETTE = ['oklch(0.7 0.19 45)', 'oklch(0.65 0.15 150)', 'oklch(0.65 0.15 240)', 'oklch(0.62 0.16 320)', 'oklch(0.6 0.14 20)'];
+const PRIMARY = { orange: 'oklch(0.68 0.19 45)', green: 'oklch(0.62 0.15 150)', blue: 'oklch(0.6 0.16 250)' };
+const PRIMARY_SOFT = { orange: 'oklch(0.95 0.03 45)', green: 'oklch(0.95 0.025 150)', blue: 'oklch(0.95 0.03 250)' };
+
+function rp(n) { return 'Rp' + Math.round(n).toLocaleString('id-ID'); }
+const MONTHS_ID = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+function formatDateLabel(dateStr) {
+  if (!dateStr) return '';
+  const parts = dateStr.split('-');
+  if (parts.length !== 3) return dateStr;
+  const y = parseInt(parts[0], 10), m = parseInt(parts[1], 10), d = parseInt(parts[2], 10);
+  if (!y || !m || !d) return dateStr;
+  return d + ' ' + MONTHS_ID[m - 1] + ' ' + y;
+}
+function waLinkFor(phone) {
+  if (!phone) return '';
+  let digits = phone.replace(/\D/g, '');
+  if (!digits) return '';
+  if (digits[0] === '0') digits = '62' + digits.slice(1);
+  else if (digits.slice(0, 2) !== '62') digits = '62' + digits;
+  return 'https://wa.me/' + digits;
+}
+function mkItem(name, qty, pic, note, checked, isPersonal) { return { name: name, qty: qty, pic: pic, note: note || '', checked: !!checked, isPersonal: !!isPersonal }; }
+
+function computeTransfers(balances) {
+  const debtors = balances.filter((b) => b.balance < -500).map((b) => ({ name: b.name, amt: -b.balance })).sort((a, b) => b.amt - a.amt);
+  const creditors = balances.filter((b) => b.balance > 500).map((b) => ({ name: b.name, amt: b.balance })).sort((a, b) => b.amt - a.amt);
+  const transfers = [];
+  let di = 0, ci = 0;
+  while (di < debtors.length && ci < creditors.length) {
+    const d = debtors[di], c = creditors[ci];
+    const amt = Math.min(d.amt, c.amt);
+    if (amt > 500) transfers.push({ from: d.name, to: c.name, amount: amt });
+    d.amt -= amt; c.amt -= amt;
+    if (d.amt <= 500) di++;
+    if (c.amt <= 500) ci++;
+  }
+  return transfers;
+}
+
+function initialTrips() {
+  return [
+    {
+      id: 't1', status: 'upcoming',
+      name: 'Camping Gunung Papandayan', location: 'Garut, Jawa Barat', dateLabel: '1 Agustus 2026',
+      mapLink: 'https://maps.google.com/?q=Gunung+Papandayan', phone: '081234567890', coverId: 'cover-t1',
+      budgetTarget: 1200000,
+      budgetItems: [
+        { name: 'Tenda dome 4 orang', price: 150000, pic: 'Rangga', splitMode: 'pic' },
+        { name: 'Matras alas tenda', price: 40000, pic: 'Sari', splitMode: 'pic' },
+        { name: 'Palu & pasak cadangan', price: 15000, pic: 'Rangga', splitMode: 'pic' },
+        { name: 'Kompor portable + gas', price: 85000, pic: 'Budi', splitMode: 'orang' },
+        { name: 'Bahan makanan 3 hari', price: 250000, pic: 'Ani', splitMode: 'orang' },
+        { name: 'Air minum galon', price: 30000, pic: 'Budi', splitMode: 'orang' },
+        { name: 'Bantal angin', price: 30000, pic: 'Sari', splitMode: 'pic' },
+        { name: 'Alas tidur tambahan', price: 20000, pic: 'Sari', splitMode: 'pic' },
+        { name: 'Tiket masuk kawasan', price: 320000, pic: 'Ani', splitMode: 'orang' },
+        { name: 'Tiket parkir kendaraan', price: 20000, pic: 'Rangga', splitMode: 'orang' },
+        { name: 'Retribusi camp ground', price: 50000, pic: 'Ani', splitMode: 'orang' },
+        { name: 'Bensin & tol', price: 100000, pic: 'Rangga', splitMode: 'orang' },
+        { name: 'Sewa mobil', price: 200000, pic: 'Dinda', splitMode: 'orang' },
+      ],
+      participants: [
+        { name: 'Dinda', picForLabel: 'Koordinator', headcount: 1 },
+        { name: 'Rangga', picForLabel: 'PIC Tenda', headcount: 2 },
+        { name: 'Budi', picForLabel: 'PIC Memasak', headcount: 1 },
+        { name: 'Sari', picForLabel: 'PIC Tidur', headcount: 1 },
+        { name: 'Ani', picForLabel: 'PIC Tiket & Logistik', headcount: 1 },
+      ],
+      items: [
+        mkItem('Tenda dome 4 orang', 1, 'Rangga', 'cek patok & pasak lengkap', true),
+        mkItem('Matras alas tenda', 4, 'Sari', '', false),
+        mkItem('Flysheet / terpal', 1, 'Rangga', 'pinjam punya Doni', false),
+        mkItem('Palu & pasak cadangan', 1, 'Rangga', '', false),
+        mkItem('Kompor portable + gas', 1, 'Budi', '', true),
+        mkItem('Nesting alat masak', 1, 'Budi', 'udah punya', true),
+        mkItem('Bahan makanan 3 hari', 1, 'Ani', '', false),
+        mkItem('Air minum galon', 2, 'Budi', '', false),
+        mkItem('Sleeping bag', 4, 'Masing-masing', 'bawa punya sendiri', false),
+        mkItem('Jaket & baju hangat', 4, 'Masing-masing', '', false),
+        mkItem('Bantal angin', 2, 'Sari', '', true),
+        mkItem('Alas tidur tambahan', 1, 'Sari', '', false),
+        mkItem('Tiket masuk kawasan', 4, 'Ani', 'beli online H-3', true),
+        mkItem('Tiket parkir kendaraan', 1, 'Rangga', '', false),
+        mkItem('Retribusi camp ground', 1, 'Ani', '', false),
+        mkItem('Baju ganti & jaket hangat', 3, '', 'sesuaikan cuaca', false, true),
+        mkItem('Alat mandi pribadi', 1, '', '', false, true),
+        mkItem('Obat pribadi', 1, '', 'jangan lupa obat alergi', false, true),
+      ],
+    },
+    {
+      id: 't2', status: 'selesai',
+      name: 'Pantai Sawarna', location: 'Lebak, Banten', dateLabel: '12-14 Juni 2026',
+      mapLink: 'https://maps.google.com/?q=Pantai+Sawarna', phone: '081298765432', coverId: 'cover-t2',
+      budgetTarget: 900000,
+      budgetItems: [
+        { name: 'Tenda dome 4 orang', price: 150000, pic: 'Rangga' },
+        { name: 'Matras', price: 40000, pic: 'Rangga' },
+        { name: 'Kompor + gas', price: 85000, pic: 'Budi' },
+        { name: 'Bahan makanan', price: 300000, pic: 'Budi' },
+        { name: 'Tiket masuk pantai', price: 200000, pic: 'Vina' },
+        { name: 'Parkir', price: 25000, pic: 'Vina' },
+        { name: 'Bensin & parkir', price: 60000, pic: 'Rangga' },
+      ],
+      participants: [
+        { name: 'Dinda', picForLabel: 'Koordinator' },
+        { name: 'Rangga', picForLabel: 'PIC Tenda' },
+        { name: 'Budi', picForLabel: 'PIC Memasak' },
+        { name: 'Vina', picForLabel: 'PIC Tiket' },
+      ],
+      items: [
+        mkItem('Tenda dome 4 orang', 1, 'Rangga', '', true),
+        mkItem('Matras', 4, 'Rangga', '', true),
+        mkItem('Kompor + gas', 1, 'Budi', '', true),
+        mkItem('Bahan makanan', 1, 'Budi', '', true),
+        mkItem('Sleeping bag', 4, 'Masing-masing', '', true),
+        mkItem('Jaket hangat', 4, 'Masing-masing', '', true),
+        mkItem('Tiket masuk pantai', 4, 'Vina', '', true),
+        mkItem('Parkir', 1, 'Vina', '', true),
+      ],
+    },
+  ];
+}
+
+class Component extends DCLogic {
+  state = {
+    screen: 'login', activeTab: 'checklist', activeTripId: null,
+    showNewTripSheet: false, showInviteSheet: false, showShareSheet: false, toastMsg: null,
+    newTripName: '', newTripLocation: '', newTripDate: '', newTripMapLink: '', newTripPhone: '', newTripCoverId: '',
+    trips: initialTrips(), isOffline: true,
+    showItemSheet: false, itemSheetMode: 'add', itemSheetItemIdx: -1,
+    itemName: '', itemQty: '1', itemPic: '', itemNote: '', showPicDropdown: false, itemIsPersonal: false,
+    showBudgetTargetSheet: false, budgetTargetInput: '',
+    showBudgetItemSheet: false, budgetItemSheetMode: 'add', budgetItemIdx: -1,
+    budgetItemName: '', budgetItemPrice: '', budgetItemPic: '', showBudgetPicDropdown: false, budgetItemSplitMode: 'orang',
+    budgetItemQty: '', budgetItemUnitPrice: '', budgetItemPaidBy: '', showBudgetPaidByDropdown: false,
+    paidTransfers: {}, expandedTransfers: {},
+    showRoleSheet: false, roleIdx: -1, roleName: '', roleInput: '', roleHeadcount: 1,
+  };
+
+  componentDidMount() {
+    if (this.props.startScreen && this.props.startScreen !== 'login') this.setState({ screen: this.props.startScreen });
+  }
+
+  flash(msg) { this.setState({ toastMsg: msg }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toastMsg: null }), 2200); }
+
+  login = () => this.setState({ screen: 'home' });
+  backHome = () => this.setState({ screen: 'home' });
+  openTrip = (id) => this.setState({ screen: 'trip', activeTripId: id, activeTab: 'checklist' });
+  setTabChecklist = () => this.setState({ activeTab: 'checklist' });
+  setTabBudget = () => this.setState({ activeTab: 'budget' });
+  setTabPeserta = () => this.setState({ activeTab: 'peserta' });
+  profileToast = () => this.flash('Fitur profil segera hadir');
+  openSplitBill = () => this.setState({ screen: 'splitbill' });
+  backFromSplitBill = () => this.setState({ screen: 'trip' });
+  toggleTransferPaid = (key) => this.setState((s) => ({ paidTransfers: Object.assign({}, s.paidTransfers, { [key]: !s.paidTransfers[key] }) }));
+  toggleTransferExpand = (key) => this.setState((s) => ({ expandedTransfers: Object.assign({}, s.expandedTransfers, { [key]: !s.expandedTransfers[key] }) }));
+
+  openEditRole = (idx, name, current, headcount) => this.setState({ showRoleSheet: true, roleIdx: idx, roleName: name, roleInput: current || '', roleHeadcount: headcount || 1 });
+  closeRoleSheet = () => this.setState({ showRoleSheet: false });
+  onRoleInputChange = (e) => this.setState({ roleInput: e.target.value });
+  selectRolePreset = (label) => this.setState({ roleInput: label });
+  incHeadcount = () => this.setState((s) => ({ roleHeadcount: Math.min(20, s.roleHeadcount + 1) }));
+  decHeadcount = () => this.setState((s) => ({ roleHeadcount: Math.max(1, s.roleHeadcount - 1) }));
+  saveRole = () => {
+    const s = this.state;
+    const label = s.roleInput.trim() || 'Peserta';
+    this.setState((st) => ({
+      trips: st.trips.map((t) => t.id !== st.activeTripId ? t : Object.assign({}, t, {
+        participants: t.participants.map((p, i) => i === s.roleIdx ? Object.assign({}, p, { picForLabel: label, headcount: s.roleHeadcount }) : p),
+      })),
+      showRoleSheet: false,
+    }));
+    this.flash('Peran & jumlah orang diperbarui!');
+  };
+
+  toggleConnectivity = () => {
+    const wasOffline = this.state.isOffline;
+    this.setState({ isOffline: !wasOffline });
+    this.flash(wasOffline ? 'Tersambung kembali. Data tersinkron.' : 'Mode offline aktif. Perubahan disimpan di perangkat.');
+  };
+
+  openAddItem = (isPersonal) => this.setState({ showItemSheet: true, itemSheetMode: 'add', itemSheetItemIdx: -1, itemName: '', itemQty: '1', itemPic: '', itemNote: '', showPicDropdown: false, itemIsPersonal: !!isPersonal });
+  openEditItem = (itemIdx, it) => this.setState({ showItemSheet: true, itemSheetMode: 'edit', itemSheetItemIdx: itemIdx, itemName: it.name, itemQty: String(it.qty), itemPic: it.pic, itemNote: it.note || '', showPicDropdown: false, itemIsPersonal: !!it.isPersonal });
+  setItemTypeKelompok = () => this.setState({ itemIsPersonal: false });
+  setItemTypePribadi = () => this.setState({ itemIsPersonal: true });
+  closeItemSheet = () => this.setState({ showItemSheet: false });
+  onItemNameChange = (e) => this.setState({ itemName: e.target.value });
+  onItemQtyChange = (e) => this.setState({ itemQty: e.target.value });
+  onItemPicChange = (e) => this.setState({ itemPic: e.target.value, showPicDropdown: true });
+  onItemNoteChange = (e) => this.setState({ itemNote: e.target.value });
+  openPicDropdown = () => this.setState({ showPicDropdown: true });
+  closePicDropdown = () => this.setState({ showPicDropdown: false });
+  selectPic = (name) => this.setState({ itemPic: name, showPicDropdown: false });
+
+  saveItemSheet = () => {
+    const s = this.state;
+    if (!s.itemName.trim()) return;
+    const newItem = mkItem(s.itemName.trim(), parseInt(s.itemQty, 10) || 1, s.itemIsPersonal ? '' : (s.itemPic.trim() || 'Belum ditentukan'), s.itemNote.trim(), false, s.itemIsPersonal);
+    this.setState((st) => ({
+      trips: st.trips.map((t) => {
+        if (t.id !== st.activeTripId) return t;
+        const items = t.items || [];
+        const newItems = s.itemSheetMode === 'edit' && s.itemSheetItemIdx >= 0
+          ? items.map((it, ii) => ii === s.itemSheetItemIdx ? Object.assign({}, it, newItem, { checked: it.checked }) : it)
+          : items.concat([newItem]);
+        return Object.assign({}, t, { items: newItems });
+      }),
+      showItemSheet: false,
+    }));
+    this.flash(s.itemSheetMode === 'edit' ? 'Barang diperbarui!' : 'Barang ditambahkan!');
+  };
+
+  deleteItem(tripId, itemIdx) {
+    this.setState((s) => ({
+      trips: s.trips.map((t) => t.id !== tripId ? t : Object.assign({}, t, { items: (t.items || []).filter((it, ii) => ii !== itemIdx) })),
+    }));
+    this.flash('Barang dihapus.');
+  }
+
+  toggleItem(tripId, itemIdx) {
+    this.setState((s) => ({
+      trips: s.trips.map((t) => t.id !== tripId ? t : Object.assign({}, t, { items: (t.items || []).map((it, ii) => ii === itemIdx ? Object.assign({}, it, { checked: !it.checked }) : it) })),
+    }));
+  }
+
+  setBudgetMode = (mode) => this.setState((s) => ({ trips: s.trips.map((t) => t.id !== s.activeTripId ? t : Object.assign({}, t, { budgetMode: mode })) }));
+  openEditBudgetTarget = (tripId, current) => this.setState({ showBudgetTargetSheet: true, budgetTargetInput: current ? String(current) : '' });
+  closeBudgetTargetSheet = () => this.setState({ showBudgetTargetSheet: false });
+  onBudgetTargetChange = (e) => this.setState({ budgetTargetInput: e.target.value });
+  saveBudgetTarget = () => {
+    const val = parseInt(this.state.budgetTargetInput, 10) || 0;
+    this.setState((s) => ({ trips: s.trips.map((t) => t.id !== s.activeTripId ? t : Object.assign({}, t, { budgetTarget: val })), showBudgetTargetSheet: false }));
+    this.flash('Total budget diperbarui!');
+  };
+
+  openAddBudgetItem = () => this.setState({ showBudgetItemSheet: true, budgetItemSheetMode: 'add', budgetItemIdx: -1, budgetItemName: '', budgetItemPrice: '', budgetItemPic: '', showBudgetPicDropdown: false, budgetItemSplitMode: 'orang', budgetItemQty: '', budgetItemUnitPrice: '', budgetItemPaidBy: '' });
+  openEditBudgetItem = (idx, item) => this.setState({ showBudgetItemSheet: true, budgetItemSheetMode: 'edit', budgetItemIdx: idx, budgetItemName: item.name, budgetItemPrice: String(item.price), budgetItemPic: item.pic || '', showBudgetPicDropdown: false, budgetItemSplitMode: item.splitMode || 'orang', budgetItemQty: '', budgetItemUnitPrice: '', budgetItemPaidBy: item.paidBy || item.pic || '' });
+  onBudgetItemQtyChange = (e) => {
+    const qty = e.target.value;
+    this.setState((s) => {
+      const q = parseFloat(qty) || 0, unit = parseFloat(s.budgetItemUnitPrice) || 0;
+      return { budgetItemQty: qty, budgetItemPrice: (q > 0 && unit > 0) ? String(Math.round(q * unit)) : s.budgetItemPrice };
+    });
+  };
+  onBudgetItemUnitPriceChange = (e) => {
+    const unitPrice = e.target.value;
+    this.setState((s) => {
+      const q = parseFloat(s.budgetItemQty) || 0, unit = parseFloat(unitPrice) || 0;
+      return { budgetItemUnitPrice: unitPrice, budgetItemPrice: (q > 0 && unit > 0) ? String(Math.round(q * unit)) : s.budgetItemPrice };
+    });
+  };
+  onBudgetItemPaidByChange = (e) => this.setState({ budgetItemPaidBy: e.target.value, showBudgetPaidByDropdown: true });
+  openBudgetPaidByDropdown = () => this.setState({ showBudgetPaidByDropdown: true });
+  closeBudgetPaidByDropdown = () => this.setState({ showBudgetPaidByDropdown: false });
+  selectBudgetPaidBy = (name) => this.setState({ budgetItemPaidBy: name, showBudgetPaidByDropdown: false });
+  setSplitModeOrang = () => this.setState({ budgetItemSplitMode: 'orang', budgetItemPic: '' });
+  setSplitModePic = () => this.setState({ budgetItemSplitMode: 'pic' });
+  closeBudgetItemSheet = () => this.setState({ showBudgetItemSheet: false });
+  onBudgetItemNameChange = (e) => this.setState({ budgetItemName: e.target.value });
+  onBudgetItemPriceChange = (e) => this.setState({ budgetItemPrice: e.target.value });
+  onBudgetItemPicChange = (e) => this.setState({ budgetItemPic: e.target.value, showBudgetPicDropdown: true });
+  openBudgetPicDropdown = () => this.setState({ showBudgetPicDropdown: true });
+  closeBudgetPicDropdown = () => this.setState({ showBudgetPicDropdown: false });
+  selectBudgetPic = (name) => this.setState({ budgetItemPic: name, showBudgetPicDropdown: false });
+
+  saveBudgetItemSheet = () => {
+    const s = this.state;
+    if (!s.budgetItemName.trim()) return;
+    const paidByVal = s.budgetItemPaidBy.trim() || 'Belum ditentukan';
+    const entry = { name: s.budgetItemName.trim(), price: parseInt(s.budgetItemPrice, 10) || 0, pic: s.budgetItemPic.trim(), splitMode: s.budgetItemSplitMode || 'orang', paidBy: paidByVal };
+    this.setState((st) => ({
+      trips: st.trips.map((t) => {
+        if (t.id !== st.activeTripId) return t;
+        const items = t.budgetItems || [];
+        const newItems = s.budgetItemSheetMode === 'edit' && s.budgetItemIdx >= 0
+          ? items.map((it, ii) => ii === s.budgetItemIdx ? entry : it)
+          : items.concat([entry]);
+        return Object.assign({}, t, { budgetItems: newItems });
+      }),
+      showBudgetItemSheet: false,
+    }));
+    this.flash(s.budgetItemSheetMode === 'edit' ? 'Pengeluaran diperbarui!' : 'Pengeluaran ditambahkan!');
+  };
+
+  deleteBudgetItem(idx) {
+    this.setState((s) => ({
+      trips: s.trips.map((t) => t.id !== s.activeTripId ? t : Object.assign({}, t, { budgetItems: (t.budgetItems || []).filter((it, ii) => ii !== idx) })),
+    }));
+    this.flash('Pengeluaran dihapus.');
+  }
+
+  openNewTrip = () => this.setState({ showNewTripSheet: true, newTripName: '', newTripLocation: '', newTripDate: '', newTripMapLink: '', newTripPhone: '', newTripCoverId: 'cover-' + Date.now() });
+  closeNewTrip = () => this.setState({ showNewTripSheet: false });
+  onNewTripNameChange = (e) => this.setState({ newTripName: e.target.value });
+  onNewTripLocationChange = (e) => this.setState({ newTripLocation: e.target.value });
+  onNewTripDateChange = (e) => this.setState({ newTripDate: e.target.value });
+  onNewTripMapLinkChange = (e) => this.setState({ newTripMapLink: e.target.value });
+  onNewTripPhoneChange = (e) => this.setState({ newTripPhone: e.target.value });
+  saveNewTrip = () => {
+    const { newTripName, newTripDate, newTripLocation, newTripMapLink, newTripPhone, newTripCoverId } = this.state;
+    if (!newTripName.trim() || !newTripDate.trim()) return;
+    const trip = {
+      id: 't' + Date.now(), status: 'upcoming', name: newTripName, location: newTripLocation || 'Lokasi belum diisi',
+      dateLabel: formatDateLabel(newTripDate) || newTripDate,
+      mapLink: newTripMapLink.trim(), phone: newTripPhone.trim(), coverId: newTripCoverId,
+      budgetTarget: 0, budgetItems: [], participants: [{ name: 'Dinda', picForLabel: 'Koordinator' }], items: [],
+    };
+    this.setState((s) => ({ trips: [trip].concat(s.trips), showNewTripSheet: false }));
+    this.flash('Trip baru dibuat!');
+  };
+
+  openInvite = () => this.setState({ showInviteSheet: true });
+  closeInvite = () => this.setState({ showInviteSheet: false });
+  copyInviteLink = () => this.flash('Link undangan disalin!');
+  shareInviteWhatsapp = () => this.flash('Link undangan dibagikan lewat WhatsApp!');
+  openShare = () => this.setState({ showShareSheet: true });
+  closeShare = () => this.setState({ showShareSheet: false });
+  shareWhatsapp = () => this.flash('Dibagikan ke WhatsApp!');
+  shareInstagram = () => this.flash('Dibagikan ke Instagram!');
+  shareX = () => this.flash('Dibagikan ke X!');
+  copyShareLink = () => this.flash('Link ringkasan disalin!');
+
+  buildTripView(t) {
+    const items = t.items || [];
+    let checked = 0;
+    const accent = PRIMARY[this.props.accentTheme || 'orange'] || PRIMARY.orange;
+    const builtItems = items.map((it, ii) => {
+      if (it.checked) checked++;
+      return {
+        name: it.name, qty: it.qty, isPersonal: it.isPersonal,
+        metaLine: it.isPersonal ? (it.note || '') : ('PIC: ' + it.pic + (it.note ? ' · ' + it.note : '')),
+        hasMetaLine: it.isPersonal ? !!it.note : true,
+        checked: it.checked, checkMark: it.checked ? '✓' : '',
+        checkColor: it.checked ? accent : 'oklch(0.88 0.006 85)',
+        checkBg: it.checked ? accent : 'transparent',
+        strike: it.checked ? 'line-through' : 'none',
+        toggle: () => this.toggleItem(t.id, ii),
+        edit: () => this.openEditItem(ii, it),
+        remove: (e) => { e.stopPropagation(); this.deleteItem(t.id, ii); },
+      };
+    });
+    const kelompokItems = builtItems.filter((it) => !it.isPersonal);
+    const pribadiItems = builtItems.filter((it) => it.isPersonal);
+    const rawBudgetItems = t.budgetItems || [];
+    const budgetItemsBuilt = rawBudgetItems.map((bi, ii) => ({
+      name: bi.name, price: bi.price, priceLabel: rp(bi.price), pic: bi.pic,
+      payerLine: (bi.pic && bi.pic !== bi.paidBy) ? ('Dibayar ' + bi.paidBy + ' untuk ' + bi.pic) : ('Dibayar ' + bi.paidBy),
+      splitTagLabel: (bi.splitMode === 'pic') ? 'Per PIC' : 'Per Orang',
+      splitTagBg: (bi.splitMode === 'pic') ? 'oklch(0.93 0.05 300)' : 'oklch(0.93 0.05 150)',
+      splitTagFg: (bi.splitMode === 'pic') ? 'oklch(0.45 0.15 300)' : 'oklch(0.4 0.1 150)',
+      edit: () => this.openEditBudgetItem(ii, bi), remove: () => this.deleteBudgetItem(ii),
+    }));
+    const spent = rawBudgetItems.reduce((a, it) => a + it.price, 0);
+    const sharedItems = rawBudgetItems.filter((it) => it.splitMode !== 'pic');
+    const picAllItems = rawBudgetItems.filter((it) => it.splitMode === 'pic');
+    const picDirectItems = picAllItems.filter((it) => it.pic && it.pic !== it.paidBy);
+    const picItems = picAllItems.filter((it) => !(it.pic && it.pic !== it.paidBy));
+    const sharedSpent = sharedItems.reduce((a, it) => a + it.price, 0);
+    const picSpent = picItems.reduce((a, it) => a + it.price, 0);
+    const totalHeadcount = t.participants.reduce((a, p) => a + (p.headcount || 1), 0) || 1;
+    const participantCount = t.participants.length || 1;
+    const picSharePerPerson = picSpent / participantCount;
+    const participantsPreview = t.participants.slice(0, 4).map((p, i) => ({ initials: p.name[0], color: PALETTE[i % PALETTE.length] }));
+    const balances = t.participants.map((p, i) => {
+      const contributionOrang = sharedItems.filter((it) => (it.paidBy || it.pic) === p.name).reduce((a, it) => a + it.price, 0);
+      const contributionPic = picItems.filter((it) => (it.paidBy || it.pic) === p.name).reduce((a, it) => a + it.price, 0);
+      const headcount = p.headcount || 1;
+      const shareOrang = sharedSpent * (headcount / totalHeadcount);
+      const share = shareOrang + picSharePerPerson;
+      const contribution = contributionOrang + contributionPic;
+      return { name: p.name, initials: p.name[0], color: PALETTE[i % PALETTE.length], contribution: contribution, headcount: headcount, share: share, balance: contribution - share };
+    });
+    const settlement = balances.map((b) => ({
+      name: b.name, initials: b.initials, color: b.color,
+      balanceLabel: Math.abs(b.balance) < 1000 ? 'Lunas' : (b.balance > 0 ? 'Menerima ' + rp(b.balance) : 'Bayar ' + rp(-b.balance)),
+      balanceColor: Math.abs(b.balance) < 1000 ? 'oklch(0.55 0.02 50)' : (b.balance > 0 ? 'oklch(0.55 0.13 150)' : 'oklch(0.6 0.17 45)'),
+    }));
+    const perPerson = balances.map((b) => ({
+      name: b.name, initials: b.initials, color: b.color,
+      bayarLabel: rp(b.contribution), jatahLabel: rp(b.share) + ' (' + b.headcount + ' orang)',
+      pillLabel: Math.abs(b.balance) < 1000 ? 'Lunas' : (b.balance > 0 ? '+ ' + rp(b.balance) : '− ' + rp(-b.balance)),
+      pillBg: Math.abs(b.balance) < 1000 ? 'oklch(0.94 0.006 85)' : (b.balance > 0 ? 'oklch(0.93 0.05 150)' : 'oklch(0.93 0.06 25)'),
+      pillColor: Math.abs(b.balance) < 1000 ? 'oklch(0.5 0.02 50)' : (b.balance > 0 ? 'oklch(0.4 0.1 150)' : 'oklch(0.5 0.15 25)'),
+    }));
+    const poolTransfers = computeTransfers(balances).map((tr) => ({ from: tr.from, to: tr.to, amount: tr.amount, label: 'Bagi rata' }));
+    const directTransfersList = picDirectItems.map((it) => ({ from: it.pic, to: it.paidBy, amount: it.price, label: it.name }));
+    const transferGroups = {};
+    poolTransfers.concat(directTransfersList).forEach((tr) => {
+      const key = tr.from + '__' + tr.to;
+      if (!transferGroups[key]) transferGroups[key] = { from: tr.from, to: tr.to, total: 0, parts: [] };
+      transferGroups[key].total += tr.amount;
+      transferGroups[key].parts.push({ label: tr.label, amountLabel: rp(tr.amount) });
+    });
+    const transfersRaw = Object.keys(transferGroups).map((key) => {
+      const g = transferGroups[key];
+      return { from: g.from, to: g.to, amountLabel: rp(g.total), key: key, parts: g.parts, hasParts: g.parts.length > 1 };
+    });
+    const waLink = waLinkFor(t.phone);
+    return {
+      id: t.id, name: t.name, location: t.location, dateLabel: t.dateLabel, isDone: t.status === 'selesai',
+      coverId: t.coverId || ('cover-' + t.id), mapLink: t.mapLink || '', hasMapLink: !!t.mapLink, waLink: waLink, hasPhone: !!waLink,
+      progressPct: items.length ? Math.round((checked / items.length) * 100) : 0, checkedCount: checked, totalCount: items.length,
+      participantsPreview: participantsPreview,
+      participants: t.participants.map((p, i) => ({ name: p.name, initials: p.name[0], color: PALETTE[i % PALETTE.length], picForLabel: p.picForLabel, headcountLabel: (p.headcount || 1) + ' orang', editRole: () => this.openEditRole(i, p.name, p.picForLabel, p.headcount || 1) })),
+      items: builtItems,
+      kelompokItems: kelompokItems, kelompokChecked: kelompokItems.filter((it) => it.checked).length, kelompokTotal: kelompokItems.length,
+      pribadiItems: pribadiItems, pribadiChecked: pribadiItems.filter((it) => it.checked).length, pribadiTotal: pribadiItems.length,
+      addKelompokItem: () => this.openAddItem(false), addPribadiItem: () => this.openAddItem(true),
+      budgetItems: budgetItemsBuilt, addBudgetItem: () => this.openAddBudgetItem(),
+      budgetMode: t.budgetMode || 'manual', isAutoBudget: (t.budgetMode || 'manual') === 'auto', isManualBudget: (t.budgetMode || 'manual') !== 'auto',
+      budgetTargetLabel: rp((t.budgetMode === 'auto') ? spent : t.budgetTarget), budgetSpentLabel: rp(spent),
+      budgetPct: (t.budgetMode === 'auto') ? (spent > 0 ? 100 : 0) : (t.budgetTarget ? Math.min(100, Math.round((spent / t.budgetTarget) * 100)) : 0),
+      budgetOver: t.budgetMode !== 'auto' && t.budgetTarget > 0 && spent > t.budgetTarget,
+      budgetOverLabel: 'Melebihi budget ' + rp(spent - t.budgetTarget),
+      editBudgetTarget: () => this.openEditBudgetTarget(t.id, t.budgetTarget),
+      setModeAuto: () => this.setBudgetMode('auto'), setModeManual: () => this.setBudgetMode('manual'),
+      settlement: settlement, perPerson: perPerson, transfersRaw: transfersRaw,
+      participantCount: t.participants.length, equalShareLabel: rp(sharedSpent / totalHeadcount),
+      inviteLink: 'kemah.app/join/' + t.id,
+      open: () => this.openTrip(t.id), shareOpen: () => { this.setState({ activeTripId: t.id }); this.openShare(); },
+      openSplitBill: this.openSplitBill,
+    };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const theme = this.props.accentTheme || 'orange';
+    const primary = PRIMARY[theme] || PRIMARY.orange;
+    const primarySoft = PRIMARY_SOFT[theme] || PRIMARY_SOFT.orange;
+    const built = s.trips.map((t) => this.buildTripView(t));
+    const currentTrip = built.find((t) => t.id === s.activeTripId) || built[0];
+    const picQuery = s.itemPic.trim().toLowerCase();
+    const picNames = currentTrip.participants.map((p) => p.name).concat(['Masing-masing']);
+    const picUnique = picNames.filter((n, i) => picNames.indexOf(n) === i);
+    const picSuggestions = picUnique.filter((n) => n.toLowerCase().includes(picQuery)).slice(0, 6).map((n) => ({ name: n, select: () => this.selectPic(n) }));
+    const budgetPicQuery = s.budgetItemPic.trim().toLowerCase();
+    const budgetPicSuggestions = picUnique.filter((n) => n.toLowerCase().includes(budgetPicQuery)).slice(0, 6).map((n) => ({ name: n, select: () => this.selectBudgetPic(n) }));
+    const budgetPaidByQuery = s.budgetItemPaidBy.trim().toLowerCase();
+    const budgetPaidBySuggestions = picUnique.filter((n) => n.toLowerCase().includes(budgetPaidByQuery)).slice(0, 6).map((n) => ({ name: n, select: () => this.selectBudgetPaidBy(n) }));
+    return {
+      isLogin: s.screen === 'login', isHome: s.screen === 'home', isTrip: s.screen === 'trip', isSplitBill: s.screen === 'splitbill',
+      stopRowClick: (e) => e.stopPropagation(),
+      backFromSplitBill: this.backFromSplitBill,
+      transfers: currentTrip.transfersRaw.map((tr) => ({
+        from: tr.from, to: tr.to, amountLabel: tr.amountLabel, key: tr.key, parts: tr.parts, hasParts: tr.hasParts,
+        expanded: !!s.expandedTransfers[tr.key], toggleExpand: () => this.toggleTransferExpand(tr.key),
+        toggle: () => this.toggleTransferPaid(tr.key),
+        checkBg: s.paidTransfers[tr.key] ? primary : 'transparent',
+        strike: s.paidTransfers[tr.key] ? 'line-through' : 'none', rowOpacity: s.paidTransfers[tr.key] ? 0.5 : 1,
+      })),
+      login: this.login, backHome: this.backHome, profileToast: this.profileToast,
+      upcomingTrips: built.filter((t) => s.trips.find((x) => x.id === t.id).status === 'upcoming'),
+      pastTrips: built.filter((t) => s.trips.find((x) => x.id === t.id).status === 'selesai'),
+      openNewTrip: this.openNewTrip, closeNewTrip: this.closeNewTrip,
+      newTripName: s.newTripName, newTripLocation: s.newTripLocation, newTripDate: s.newTripDate,
+      onNewTripNameChange: this.onNewTripNameChange, onNewTripLocationChange: this.onNewTripLocationChange, onNewTripDateChange: this.onNewTripDateChange,
+      saveNewTrip: this.saveNewTrip, newTripSaveBg: (s.newTripName.trim() && s.newTripDate.trim()) ? primary : 'oklch(0.85 0.006 85)',
+      showNewTripSheet: s.showNewTripSheet, showInviteSheet: s.showInviteSheet, showShareSheet: s.showShareSheet,
+      openInvite: this.openInvite, closeInvite: this.closeInvite, copyInviteLink: this.copyInviteLink, shareInviteWhatsapp: this.shareInviteWhatsapp,
+      openShare: this.openShare, closeShare: this.closeShare,
+      shareWhatsapp: this.shareWhatsapp, shareInstagram: this.shareInstagram, shareX: this.shareX, copyShareLink: this.copyShareLink,
+      currentTrip: currentTrip,
+      setTabChecklist: this.setTabChecklist, setTabBudget: this.setTabBudget, setTabPeserta: this.setTabPeserta,
+      tabIsChecklist: s.activeTab === 'checklist', tabIsBudget: s.activeTab === 'budget', tabIsPeserta: s.activeTab === 'peserta',
+      checklistTabBg: s.activeTab === 'checklist' ? primarySoft : 'transparent', checklistTabColor: s.activeTab === 'checklist' ? primary : 'oklch(0.55 0.02 50)',
+      budgetTabBg: s.activeTab === 'budget' ? primarySoft : 'transparent', budgetTabColor: s.activeTab === 'budget' ? primary : 'oklch(0.55 0.02 50)',
+      pesertaTabBg: s.activeTab === 'peserta' ? primarySoft : 'transparent', pesertaTabColor: s.activeTab === 'peserta' ? primary : 'oklch(0.55 0.02 50)',
+      modeAutoBg: currentTrip.isAutoBudget ? '#fff' : 'transparent', modeAutoFg: currentTrip.isAutoBudget ? primary : 'rgba(255,255,255,0.85)',
+      modeManualBg: currentTrip.isAutoBudget ? 'transparent' : '#fff', modeManualFg: currentTrip.isAutoBudget ? 'rgba(255,255,255,0.85)' : primary,
+      splitBillEnabled: this.props.splitBillEnabled !== false,
+      hasToast: !!s.toastMsg, toastMsg: s.toastMsg,
+      primary: primary, primarySoft: primarySoft,
+      isOffline: s.isOffline, toggleConnectivity: this.toggleConnectivity,
+      connectivityLabel: s.isOffline ? 'Mode Offline · data tersimpan di perangkat' : 'Tersambung · tersinkron',
+      connectivityDot: s.isOffline ? 'oklch(0.6 0.02 50)' : 'oklch(0.65 0.15 150)',
+      showItemSheet: s.showItemSheet, closeItemSheet: this.closeItemSheet,
+      itemSheetTitle: s.itemSheetMode === 'edit' ? 'Edit Barang' : 'Tambah Barang',
+      itemName: s.itemName, itemQty: s.itemQty, itemPic: s.itemPic, itemNote: s.itemNote,
+      onItemNameChange: this.onItemNameChange, onItemQtyChange: this.onItemQtyChange, onItemPicChange: this.onItemPicChange, onItemNoteChange: this.onItemNoteChange,
+      saveItemSheet: this.saveItemSheet, itemSaveBg: s.itemName.trim() ? primary : 'oklch(0.85 0.006 85)',
+      showPicDropdown: s.showPicDropdown, openPicDropdown: this.openPicDropdown, closePicDropdown: this.closePicDropdown,
+      picSuggestions: picSuggestions, noPicSuggestions: picSuggestions.length === 0,
+      setItemTypeKelompok: this.setItemTypeKelompok, setItemTypePribadi: this.setItemTypePribadi,
+      itemShowPic: !s.itemIsPersonal,
+      itemTypeKelompokBg: !s.itemIsPersonal ? primary : 'oklch(0.95 0.006 85)', itemTypeKelompokFg: !s.itemIsPersonal ? '#fff' : 'oklch(0.4 0.02 50)',
+      itemTypePribadiBg: s.itemIsPersonal ? primary : 'oklch(0.95 0.006 85)', itemTypePribadiFg: s.itemIsPersonal ? '#fff' : 'oklch(0.4 0.02 50)',
+      showBudgetTargetSheet: s.showBudgetTargetSheet, closeBudgetTargetSheet: this.closeBudgetTargetSheet,
+      budgetTargetInput: s.budgetTargetInput, onBudgetTargetChange: this.onBudgetTargetChange, saveBudgetTarget: this.saveBudgetTarget,
+      showBudgetItemSheet: s.showBudgetItemSheet, closeBudgetItemSheet: this.closeBudgetItemSheet,
+      budgetItemSheetTitle: s.budgetItemSheetMode === 'edit' ? 'Edit Pengeluaran' : 'Tambah Pengeluaran',
+      budgetItemName: s.budgetItemName, budgetItemPrice: s.budgetItemPrice, budgetItemPic: s.budgetItemPic,
+      budgetItemQty: s.budgetItemQty, budgetItemUnitPrice: s.budgetItemUnitPrice, budgetItemPaidBy: s.budgetItemPaidBy,
+      onBudgetItemQtyChange: this.onBudgetItemQtyChange, onBudgetItemUnitPriceChange: this.onBudgetItemUnitPriceChange, onBudgetItemPaidByChange: this.onBudgetItemPaidByChange,
+      showBudgetPaidByDropdown: s.showBudgetPaidByDropdown, openBudgetPaidByDropdown: this.openBudgetPaidByDropdown, closeBudgetPaidByDropdown: this.closeBudgetPaidByDropdown,
+      budgetPaidBySuggestions: budgetPaidBySuggestions, noBudgetPaidBySuggestions: budgetPaidBySuggestions.length === 0,
+      onBudgetItemNameChange: this.onBudgetItemNameChange, onBudgetItemPriceChange: this.onBudgetItemPriceChange, onBudgetItemPicChange: this.onBudgetItemPicChange,
+      saveBudgetItemSheet: this.saveBudgetItemSheet, budgetItemSaveBg: s.budgetItemName.trim() ? primary : 'oklch(0.85 0.006 85)',
+      setSplitModeOrang: this.setSplitModeOrang, setSplitModePic: this.setSplitModePic,
+      splitModeOrangBg: s.budgetItemSplitMode !== 'pic' ? primary : 'oklch(0.95 0.006 85)', splitModeOrangFg: s.budgetItemSplitMode !== 'pic' ? '#fff' : 'oklch(0.4 0.02 50)',
+      splitModePicBg: s.budgetItemSplitMode === 'pic' ? primary : 'oklch(0.95 0.006 85)', splitModePicFg: s.budgetItemSplitMode === 'pic' ? '#fff' : 'oklch(0.4 0.02 50)',
+      isPicSplitMode: s.budgetItemSplitMode === 'pic',
+      showBudgetPicDropdown: s.showBudgetPicDropdown, openBudgetPicDropdown: this.openBudgetPicDropdown, closeBudgetPicDropdown: this.closeBudgetPicDropdown,
+      budgetPicSuggestions: budgetPicSuggestions, noBudgetPicSuggestions: budgetPicSuggestions.length === 0,
+      showRoleSheet: s.showRoleSheet, closeRoleSheet: this.closeRoleSheet,
+      roleName: s.roleName, roleInput: s.roleInput, onRoleInputChange: this.onRoleInputChange, saveRole: this.saveRole,
+      roleHeadcount: s.roleHeadcount, incHeadcount: this.incHeadcount, decHeadcount: this.decHeadcount,
+      roleSaveBg: s.roleInput.trim() ? primary : 'oklch(0.85 0.006 85)',
+      rolePresets: ['Koordinator', 'PIC Tenda', 'PIC Masak', 'PIC Tidur', 'PIC Tiket', 'PIC Dokumentasi'].map((label) => ({ label: label, selected: label === s.roleInput, bg: label === s.roleInput ? primary : 'oklch(0.95 0.006 85)', fg: label === s.roleInput ? '#fff' : 'oklch(0.4 0.02 50)', select: () => this.selectRolePreset(label) })),
+    };
+  }
+}
+
+</script>
+</body>
+</html>
