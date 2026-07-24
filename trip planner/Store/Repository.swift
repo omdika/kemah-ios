@@ -31,6 +31,8 @@ protocol KemahRepository: Sendable {
     func deleteBudgetItem(tripId: String, budgetItemId: String) async throws
 
     func inviteLink(tripId: String) async throws -> InviteLink
+
+    func splitBill(tripId: String) async throws -> SplitBillResponse
 }
 
 // MARK: - Real backend
@@ -78,5 +80,9 @@ final class APIRepository: KemahRepository {
 
     func inviteLink(tripId: String) async throws -> InviteLink {
         try await client.createInviteLink(tripId: tripId)
+    }
+
+    func splitBill(tripId: String) async throws -> SplitBillResponse {
+        try await client.getSplitBill(tripId: tripId)
     }
 }

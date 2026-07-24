@@ -171,6 +171,37 @@ actor MockRepository: KemahRepository {
         InviteLink(url: "https://kemah.app/join/\(tripId)?token=demo\(tripId)")
     }
 
+    // MARK: Split Bill
+
+    func splitBill(tripId: String) async throws -> SplitBillResponse {
+        let trip = try await self.trip(id: tripId)
+        let result = SplitBillCalculator.compute(participants: trip.participants, budgetItems: trip.budgetItems)
+        return SplitBillResponse(
+            equalShareLabel: result.equalShareLabel,
+            participantCount: result.participantCount,
+            perPerson: result.perPerson.map { row in
+                SplitBillPerPerson(
+                    name: row.name,
+                    contribution: row.contribution,
+                    share: row.share,
+                    balance: row.balance,
+                    headcount: row.headcount,
+                    poolDetails: row.poolDetails.map {
+                        SplitBillPoolDetail(name: $0.name, share: $0.share, paid: $0.paid)
+                    }
+                )
+            },
+            transfers: result.transfers.map { t in
+                SplitBillTransfer(
+                    from: t.from,
+                    to: t.to,
+                    total: t.total,
+                    parts: t.parts.map { SplitBillTransferPart(label: $0.label, amount: $0.amount) }
+                )
+            }
+        )
+    }
+
     // MARK: Helpers
 
     @discardableResult

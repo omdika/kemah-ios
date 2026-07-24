@@ -149,15 +149,28 @@ struct SplitBillResponse: Codable, Hashable {
 
 struct SplitBillPerPerson: Codable, Hashable {
     var name: String
-    var paid: Double
+    /// Amount this person actually fronted for pool items (renamed from `paid` in v1.3.0).
+    var contribution: Double
     var share: Double
     var balance: Double
+    var headcount: Int
+    var poolDetails: [SplitBillPoolDetail]
+}
+
+/// Per-item pool attribution for one participant (Level B transparency).
+struct SplitBillPoolDetail: Codable, Hashable {
+    var name: String
+    /// This person's fair portion of the item.
+    var share: Double
+    /// Full item price if this person was the payer, else 0.
+    var paid: Double
 }
 
 struct SplitBillTransfer: Codable, Hashable {
     var from: String
     var to: String
-    var amount: Double
+    /// Merged total for this (from, to) pair (renamed from `amount` in v1.3.0).
+    var total: Double
     var parts: [SplitBillTransferPart]
 }
 

@@ -22,8 +22,10 @@ final class TripStore: ObservableObject {
     // Data
     @Published var trips: [TripSummary] = []
     @Published var activeTrip: Trip?
+    @Published var activeSettlement: SettlementResult?
     @Published private(set) var isLoadingTrips = false
     @Published private(set) var isLoadingDetail = false
+    @Published private(set) var isLoadingSettlement = false
 
     // UI-only state
     @Published var isOffline = true
@@ -42,8 +44,48 @@ final class TripStore: ObservableObject {
     var upcomingTrips: [TripSummary] { trips.filter { $0.status == .upcoming } }
     var historyTrips: [TripSummary] { trips.filter { $0.status == .selesai } }
 
-    func settlement(for trip: Trip) -> SettlementResult {
-        SplitBillCalculator.compute(participants: trip.participants, budgetItems: trip.budgetItems)
+    // MARK: - Split Bill
+
+    func loadSettlement(for trip: Trip) async {
+        isLoadingSettlement = true
+        defer { isLoadingSettlement = false }
+        do {
+            let response = try await repository.splitBill(tripId: trip.id)
+            activeSettlement = mapSettlement(response, participants: trip.participants)
+        } catch {
+            // API unavailable — fall back to client-side computation.
+            activeSettlement = SplitBillCalculator.compute(
+                participants: trip.participants,
+                budgetItems: trip.budgetItems
+            )
+        }
+    }
+
+    private func mapSettlement(_ response: SplitBillResponse, participants: [Participant]) -> SettlementResult {
+        let colorMap = Dictionary(uniqueKeysWithValues: participants.enumerated().map { ($1.name, $0) })
+        return SettlementResult(
+            participantCount: response.participantCount,
+            equalShareLabel: response.equalShareLabel,
+            perPerson: response.perPerson.map { p in
+                PerPersonRow(
+                    name: p.name,
+                    colorIndex: colorMap[p.name] ?? 0,
+                    contribution: p.contribution,
+                    share: p.share,
+                    balance: p.balance,
+                    headcount: p.headcount,
+                    poolDetails: p.poolDetails.map { PoolItemDetail(name: $0.name, share: $0.share, paid: $0.paid) }
+                )
+            },
+            transfers: response.transfers.map { t in
+                TransferRow(
+                    from: t.from,
+                    to: t.to,
+                    total: t.total,
+                    parts: t.parts.map { TransferPart(label: $0.label, amount: $0.amount) }
+                )
+            }
+        )
     }
 
     // MARK: - Toast

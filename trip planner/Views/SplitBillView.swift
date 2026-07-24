@@ -18,8 +18,7 @@ struct SplitBillView: View {
 
     var body: some View {
         Group {
-            if let trip = store.activeTrip {
-                let result = store.settlement(for: trip)
+            if let trip = store.activeTrip, let result = store.activeSettlement {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
                         banner(result)
@@ -38,6 +37,16 @@ struct SplitBillView: View {
                     .padding(20)
                 }
                 .background(Theme.background)
+                .task(id: trip.id) {
+                    await store.loadSettlement(for: trip)
+                }
+            } else if let trip = store.activeTrip {
+                ProgressView("Menghitung...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Theme.background)
+                    .task(id: trip.id) {
+                        await store.loadSettlement(for: trip)
+                    }
             } else {
                 ProgressView()
             }
