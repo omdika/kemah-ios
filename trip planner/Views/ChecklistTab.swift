@@ -147,9 +147,12 @@ struct ChecklistTab: View {
                 ChecklistRow(
                     item: item,
                     accent: store.accent.color,
+                    currentUserId: store.user?.id,
                     toggle: { Task { await store.toggleItem(item) } },
                     edit: { editing = item },
-                    remove: { Task { await store.deleteItem(item) } }
+                    remove: { Task { await store.deleteItem(item) } },
+                    uploadImage: { data in await store.uploadItemImage(item, data: data, fileName: "photo.jpg", mimeType: "image/jpeg") },
+                    deleteImage: { imageId in await store.deleteItemImage(item, imageId: imageId) }
                 )
             }
         }
@@ -161,9 +164,12 @@ struct ChecklistTab: View {
 struct ChecklistRow: View {
     let item: ChecklistItem
     let accent: Color
+    let currentUserId: String?
     let toggle: () -> Void
     let edit: () -> Void
     let remove: () -> Void
+    let uploadImage: (Data) async -> Void
+    let deleteImage: (String) async -> Void
 
     private var metaLine: String? {
         if item.isPersonal {
@@ -203,6 +209,10 @@ struct ChecklistRow: View {
                 }
             }
             Spacer()
+            ImageStripButton(
+                images: item.images, size: 32, currentUserId: currentUserId,
+                onUpload: uploadImage, onDelete: deleteImage
+            )
             Button(action: remove) {
                 Image(systemName: "xmark").font(.caption.weight(.bold)).foregroundStyle(Theme.textSubtle)
             }

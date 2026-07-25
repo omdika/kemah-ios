@@ -29,4 +29,19 @@ extension Formatters {
         guard let date = isoParser.date(from: iso) else { return iso }
         return idDisplay.string(from: date)
     }
+
+    private static let isoTimestampParser = ISO8601DateFormatter()
+
+    private static let idDisplayWithTime: DateFormatter = {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "id_ID")
+        f.dateFormat = "d MMM yyyy, HH:mm"
+        return f
+    }()
+
+    /// "2026-07-21T10:00:00Z" -> "21 Jul 2026, 10:00". Falls back to the raw string if unparseable.
+    static func dateTimeLabel(_ iso: String) -> String {
+        guard let date = isoTimestampParser.date(from: iso) else { return iso }
+        return idDisplayWithTime.string(from: date)
+    }
 }

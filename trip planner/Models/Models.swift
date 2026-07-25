@@ -48,6 +48,9 @@ struct TripSummary: Codable, Identifiable, Hashable {
     /// ISO date string, e.g. "2026-08-01".
     var date: String
     var coverUrl: String?
+    /// Attribution for `coverUrl`; nil until someone uploads a cover photo.
+    var coverUploadedByName: String? = nil
+    var coverUploadedAt: String? = nil
     var mapLink: String?
     var phone: String?
     var status: TripStatus
@@ -65,6 +68,8 @@ struct Trip: Codable, Identifiable, Hashable {
     var location: String
     var date: String
     var coverUrl: String?
+    var coverUploadedByName: String? = nil
+    var coverUploadedAt: String? = nil
     var mapLink: String?
     var phone: String?
     var status: TripStatus
@@ -73,6 +78,17 @@ struct Trip: Codable, Identifiable, Hashable {
     var participants: [Participant]
     var items: [ChecklistItem]
     var budgetItems: [BudgetItem]
+}
+
+// MARK: - Photo uploads
+
+/// One uploaded photo, attributed to whoever added it.
+struct TripImage: Codable, Identifiable, Hashable {
+    let id: String
+    var url: String
+    var uploadedBy: String
+    var uploadedByName: String
+    var createdAt: String
 }
 
 struct Participant: Codable, Identifiable, Hashable {
@@ -93,6 +109,39 @@ struct ChecklistItem: Codable, Identifiable, Hashable {
     /// Owner of a personal item (server-set from the auth token). Personal items
     /// are only returned to their owner; nil for shared/group items.
     var owner: String?
+    var images: [TripImage] = []
+
+    init(id: String, name: String, qty: Int, pic: String?, note: String, checked: Bool,
+         isPersonal: Bool, owner: String?, images: [TripImage] = []) {
+        self.id = id
+        self.name = name
+        self.qty = qty
+        self.pic = pic
+        self.note = note
+        self.checked = checked
+        self.isPersonal = isPersonal
+        self.owner = owner
+        self.images = images
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, qty, pic, note, checked, isPersonal, owner, images
+    }
+
+    // Defensive decode: `images` defaults to [] when the backend omits it
+    // (e.g. a not-yet-upgraded server, pre-v1.5.0).
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(String.self, forKey: .id)
+        name = try c.decode(String.self, forKey: .name)
+        qty = try c.decode(Int.self, forKey: .qty)
+        pic = try c.decodeIfPresent(String.self, forKey: .pic)
+        note = try c.decode(String.self, forKey: .note)
+        checked = try c.decode(Bool.self, forKey: .checked)
+        isPersonal = try c.decodeIfPresent(Bool.self, forKey: .isPersonal) ?? false
+        owner = try c.decodeIfPresent(String.self, forKey: .owner)
+        images = try c.decodeIfPresent([TripImage].self, forKey: .images) ?? []
+    }
 }
 
 struct BudgetItem: Codable, Identifiable, Hashable {
@@ -107,9 +156,10 @@ struct BudgetItem: Codable, Identifiable, Hashable {
     var isPersonal: Bool
     /// Owner of a personal expense (server-set). nil for group expenses.
     var owner: String?
+    var images: [TripImage] = []
 
     init(id: String, name: String, price: Double, paidBy: String?, pic: String?,
-         splitMode: SplitMode, isPersonal: Bool = false, owner: String? = nil) {
+         splitMode: SplitMode, isPersonal: Bool = false, owner: String? = nil, images: [TripImage] = []) {
         self.id = id
         self.name = name
         self.price = price
@@ -118,10 +168,11 @@ struct BudgetItem: Codable, Identifiable, Hashable {
         self.splitMode = splitMode
         self.isPersonal = isPersonal
         self.owner = owner
+        self.images = images
     }
 
     enum CodingKeys: String, CodingKey {
-        case id, name, price, paidBy, pic, splitMode, isPersonal, owner
+        case id, name, price, paidBy, pic, splitMode, isPersonal, owner, images
     }
 
     // Defensive decode: `isPersonal` defaults to false when the backend omits it.
@@ -135,6 +186,7 @@ struct BudgetItem: Codable, Identifiable, Hashable {
         splitMode = try c.decode(SplitMode.self, forKey: .splitMode)
         isPersonal = try c.decodeIfPresent(Bool.self, forKey: .isPersonal) ?? false
         owner = try c.decodeIfPresent(String.self, forKey: .owner)
+        images = try c.decodeIfPresent([TripImage].self, forKey: .images) ?? []
     }
 }
 
@@ -164,6 +216,8 @@ struct SplitBillPoolDetail: Codable, Hashable {
     var share: Double
     /// Full item price if this person was the payer, else 0.
     var paid: Double
+    /// Source `BudgetItem.id` — lets the UI look up `trip.budgetItems[].images`.
+    var budgetItemId: String?
 }
 
 struct SplitBillTransfer: Codable, Hashable {
@@ -177,6 +231,8 @@ struct SplitBillTransfer: Codable, Hashable {
 struct SplitBillTransferPart: Codable, Hashable {
     var label: String
     var amount: Double
+    /// Source `BudgetItem.id`; nil for merged "Bagi rata" parts (no single item applies).
+    var budgetItemId: String?
 }
 
 // MARK: - Invite

@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct TripDetailView: View {
     @EnvironmentObject private var store: TripStore
@@ -19,6 +20,8 @@ struct TripDetailView: View {
     @State private var showBudgetAdd = false
     @State private var showChecklistAdd = false
     @State private var checklistIsPersonal = false
+    @State private var coverPickerItem: PhotosPickerItem?
+    @State private var isUploadingCover = false
 
     enum DetailTab: String, CaseIterable {
         case checklist = "Checklist"
@@ -56,6 +59,7 @@ struct TripDetailView: View {
                     }
 
                     backButton
+                    coverEditButton
                 }
             } else {
                 ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -72,6 +76,17 @@ struct TripDetailView: View {
         .sheet(isPresented: $showChecklistAdd) {
             if let trip = store.activeTrip {
                 ItemSheet(trip: trip, existing: nil, isPersonal: checklistIsPersonal)
+            }
+        }
+        .onChange(of: coverPickerItem) { newItem in
+            guard let newItem else { return }
+            Task {
+                isUploadingCover = true
+                if let data = try? await newItem.loadTransferable(type: Data.self) {
+                    await store.uploadCoverImage(data: data, fileName: "cover.jpg", mimeType: "image/jpeg")
+                }
+                isUploadingCover = false
+                coverPickerItem = nil
             }
         }
     }
@@ -109,9 +124,34 @@ struct TripDetailView: View {
                     }
                 }
                 .padding(.top, 2)
+
+                if let uploader = trip.coverUploadedByName {
+                    Text("Foto cover oleh \(uploader)")
+                        .font(.caption2)
+                        .foregroundStyle(.white.opacity(0.75))
+                }
             }
             .padding(16)
         }
+    }
+
+    private var coverEditButton: some View {
+        PhotosPicker(selection: $coverPickerItem, matching: .images) {
+            ZStack {
+                Circle().fill(.black.opacity(0.35))
+                if isUploadingCover {
+                    ProgressView().tint(.white)
+                } else {
+                    Image(systemName: "camera.fill").font(.footnote).foregroundStyle(.white)
+                }
+            }
+            .frame(width: 34, height: 34)
+        }
+        .buttonStyle(.plain)
+        .disabled(isUploadingCover)
+        .frame(maxWidth: .infinity, alignment: .trailing)
+        .padding(.top, 8)
+        .padding(.trailing, 16)
     }
 
     private var backButton: some View {

@@ -16,6 +16,23 @@ struct SplitBillView: View {
     @State private var paid: Set<String> = []
     @State private var expanded: Set<String> = []
 
+    private func budgetItem(for id: String?) -> BudgetItem? {
+        guard let id else { return nil }
+        return store.activeTrip?.budgetItems.first { $0.id == id }
+    }
+
+    private func imageStrip(for budgetItemId: String?) -> some View {
+        Group {
+            if let item = budgetItem(for: budgetItemId) {
+                ImageStripButton(
+                    images: item.images, size: 26, currentUserId: store.user?.id,
+                    onUpload: { data in await store.uploadBudgetItemImage(item, data: data, fileName: "photo.jpg", mimeType: "image/jpeg") },
+                    onDelete: { imageId in await store.deleteBudgetItemImage(item, imageId: imageId) }
+                )
+            }
+        }
+    }
+
     var body: some View {
         Group {
             if let trip = store.activeTrip, let result = store.activeSettlement {
@@ -186,6 +203,7 @@ struct SplitBillView: View {
                             HStack {
                                 Text(part.label).font(.caption).foregroundStyle(Theme.textMuted)
                                 Spacer()
+                                imageStrip(for: part.budgetItemId)
                                 Text(Formatters.rp(part.amount))
                                     .font(.caption.weight(.semibold)).foregroundStyle(Theme.textMuted)
                             }
@@ -233,12 +251,13 @@ struct SplitBillView: View {
                     .foregroundStyle(Theme.textSubtle)
                     .padding(.bottom, 4)
                 ForEach(Array(oweItems.enumerated()), id: \.offset) { _, detail in
-                    HStack(alignment: .firstTextBaseline) {
+                    HStack(alignment: .center) {
                         Text(detail.name)
                             .font(.caption)
                             .foregroundStyle(Theme.textMuted)
                             .lineLimit(1)
                         Spacer(minLength: 8)
+                        imageStrip(for: detail.budgetItemId)
                         Text(Formatters.rp(detail.share))
                             .font(.caption)
                             .foregroundStyle(Theme.textMuted)
@@ -254,12 +273,13 @@ struct SplitBillView: View {
                     .foregroundStyle(Theme.textSubtle)
                     .padding(.top, 8).padding(.bottom, 4)
                 ForEach(Array(paidItems.enumerated()), id: \.offset) { _, detail in
-                    HStack(alignment: .firstTextBaseline) {
+                    HStack(alignment: .center) {
                         Text(detail.name)
                             .font(.caption)
                             .foregroundStyle(Theme.credit)
                             .lineLimit(1)
                         Spacer(minLength: 8)
+                        imageStrip(for: detail.budgetItemId)
                         Text("−\(Formatters.rp(detail.paid))")
                             .font(.caption)
                             .foregroundStyle(Theme.credit)

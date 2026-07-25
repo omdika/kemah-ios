@@ -130,8 +130,11 @@ struct BudgetTab: View {
             VStack(spacing: 8) {
                 ForEach(groupItems) { item in
                     ExpenseRow(item: item,
+                               currentUserId: store.user?.id,
                                edit: { editing = item },
-                               remove: { Task { await store.deleteBudgetItem(item) } })
+                               remove: { Task { await store.deleteBudgetItem(item) } },
+                               uploadImage: { data in await store.uploadBudgetItemImage(item, data: data, fileName: "photo.jpg", mimeType: "image/jpeg") },
+                               deleteImage: { imageId in await store.deleteBudgetItemImage(item, imageId: imageId) })
                 }
             }
         }
@@ -155,8 +158,11 @@ struct BudgetTab: View {
             VStack(spacing: 8) {
                 ForEach(personalItems) { item in
                     ExpenseRow(item: item,
+                               currentUserId: store.user?.id,
                                edit: { editing = item },
-                               remove: { Task { await store.deleteBudgetItem(item) } })
+                               remove: { Task { await store.deleteBudgetItem(item) } },
+                               uploadImage: { data in await store.uploadBudgetItemImage(item, data: data, fileName: "photo.jpg", mimeType: "image/jpeg") },
+                               deleteImage: { imageId in await store.deleteBudgetItemImage(item, imageId: imageId) })
                 }
             }
 
@@ -196,8 +202,11 @@ struct BudgetTab: View {
 
 struct ExpenseRow: View {
     let item: BudgetItem
+    let currentUserId: String?
     let edit: () -> Void
     let remove: () -> Void
+    let uploadImage: (Data) async -> Void
+    let deleteImage: (String) async -> Void
 
     private var payerLine: String {
         if item.isPersonal { return "Pengeluaran pribadi" }
@@ -224,6 +233,10 @@ struct ExpenseRow: View {
                 }
             }
             Spacer()
+            ImageStripButton(
+                images: item.images, size: 32, currentUserId: currentUserId,
+                onUpload: uploadImage, onDelete: deleteImage
+            )
             VStack(alignment: .trailing, spacing: 8) {
                 Text(Formatters.rp(item.price)).font(.subheadline.weight(.bold)).foregroundStyle(Theme.textPrimary)
                 Button(action: remove) {

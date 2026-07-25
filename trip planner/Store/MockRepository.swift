@@ -205,7 +205,7 @@ actor MockRepository: KemahRepository {
                     balance: row.balance,
                     headcount: row.headcount,
                     poolDetails: row.poolDetails.map {
-                        SplitBillPoolDetail(name: $0.name, share: $0.share, paid: $0.paid)
+                        SplitBillPoolDetail(name: $0.name, share: $0.share, paid: $0.paid, budgetItemId: $0.budgetItemId)
                     }
                 )
             },
@@ -214,10 +214,63 @@ actor MockRepository: KemahRepository {
                     from: t.from,
                     to: t.to,
                     total: t.total,
-                    parts: t.parts.map { SplitBillTransferPart(label: $0.label, amount: $0.amount) }
+                    parts: t.parts.map {
+                        SplitBillTransferPart(label: $0.label, amount: $0.amount, budgetItemId: $0.budgetItemId)
+                    }
                 )
             }
         )
+    }
+
+    // MARK: Images
+
+    func uploadTripCover(tripId: String, fileData: Data, fileName: String, mimeType: String) async throws -> Trip {
+        let t = try mutate(tripId) { trip in
+            trip.coverUrl = "mock://cover/\(UUID().uuidString)"
+            trip.coverUploadedByName = currentUser.name
+            trip.coverUploadedAt = ISO8601DateFormatter().string(from: Date())
+        }
+        return visible(t)
+    }
+
+    func uploadItemImage(tripId: String, itemId: String, fileData: Data, fileName: String, mimeType: String) async throws -> TripImage {
+        let image = TripImage(
+            id: "img_\(UUID().uuidString.prefix(8))", url: "mock://image/\(UUID().uuidString)",
+            uploadedBy: currentUser.id, uploadedByName: currentUser.name,
+            createdAt: ISO8601DateFormatter().string(from: Date())
+        )
+        _ = try mutate(tripId) { trip in
+            guard let i = trip.items.firstIndex(where: { $0.id == itemId }) else { return }
+            trip.items[i].images.append(image)
+        }
+        return image
+    }
+
+    func deleteItemImage(tripId: String, itemId: String, imageId: String) async throws {
+        _ = try mutate(tripId) { trip in
+            guard let i = trip.items.firstIndex(where: { $0.id == itemId }) else { return }
+            trip.items[i].images.removeAll { $0.id == imageId }
+        }
+    }
+
+    func uploadBudgetItemImage(tripId: String, budgetItemId: String, fileData: Data, fileName: String, mimeType: String) async throws -> TripImage {
+        let image = TripImage(
+            id: "img_\(UUID().uuidString.prefix(8))", url: "mock://image/\(UUID().uuidString)",
+            uploadedBy: currentUser.id, uploadedByName: currentUser.name,
+            createdAt: ISO8601DateFormatter().string(from: Date())
+        )
+        _ = try mutate(tripId) { trip in
+            guard let i = trip.budgetItems.firstIndex(where: { $0.id == budgetItemId }) else { return }
+            trip.budgetItems[i].images.append(image)
+        }
+        return image
+    }
+
+    func deleteBudgetItemImage(tripId: String, budgetItemId: String, imageId: String) async throws {
+        _ = try mutate(tripId) { trip in
+            guard let i = trip.budgetItems.firstIndex(where: { $0.id == budgetItemId }) else { return }
+            trip.budgetItems[i].images.removeAll { $0.id == imageId }
+        }
     }
 
     // MARK: Helpers

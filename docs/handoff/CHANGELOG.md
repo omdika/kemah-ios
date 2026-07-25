@@ -5,6 +5,20 @@ Versioning is semantic-ish: MAJOR for breaking model/flow changes, MINOR for new
 
 Each released version is archived verbatim under [`versions/`](./versions/); the files at the handoff root are always the latest.
 
+## [1.5.0] — 2026-07-25
+
+### Added
+
+**Photo uploads — trip cover, checklist items, budget items**
+- `POST /trips/:tripId/cover` (multipart) — sets/replaces the trip's cover photo with uploader attribution (`coverUploadedByName`/`coverUploadedAt` on `Trip`/`TripSummary`).
+- `POST /trips/:tripId/items/:itemId/images` / `DELETE .../images/:imageId` — checklist item photo gallery.
+- `POST /trips/:tripId/budget-items/:itemId/images` / `DELETE .../images/:imageId` — budget item photo gallery (e.g. receipts).
+- Every uploaded image carries `uploadedBy`/`uploadedByName`/`createdAt`; only the uploader can delete their own image. Any participant who can see the entity (group item, or a personal item they own) can upload to it.
+- `items[]`/`budgetItems[]` responses gain an `images[]` array (oldest first).
+- `GET /trips/:tripId/split-bill` — `poolDetails[]` and direct-debt `transfers[].parts[]` gain `budgetItemId`, so the client can cross-reference `trip.budgetItems[].images` to show photos next to a settlement line without a new endpoint. `null` on merged "Bagi rata" parts (no single source item).
+- New table `trip_images` (checklist/budget galleries) + `trips.cover_uploaded_by`/`cover_uploaded_by_name`/`cover_uploaded_at` columns — see `sql/migrations/002_add_images.sql`.
+- `POST /uploads` (the old generic single-file upload) is unchanged and still available for one-off use, but the new attached-upload endpoints are preferred going forward since they persist attribution.
+
 ## [1.4.1] — 2026-07-25
 
 ### Added

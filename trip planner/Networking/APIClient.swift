@@ -267,8 +267,32 @@ final class APIClient: Sendable {
     // MARK: - Uploads
 
     func upload(fileData: Data, fileName: String, mimeType: String) async throws -> UploadResult {
+        try await uploadMultipart(path: "uploads", fileData: fileData, fileName: fileName, mimeType: mimeType)
+    }
+
+    func uploadTripCover(tripId: String, fileData: Data, fileName: String, mimeType: String) async throws -> Trip {
+        try await uploadMultipart(path: "trips/\(tripId)/cover", fileData: fileData, fileName: fileName, mimeType: mimeType)
+    }
+
+    func uploadItemImage(tripId: String, itemId: String, fileData: Data, fileName: String, mimeType: String) async throws -> TripImage {
+        try await uploadMultipart(path: "trips/\(tripId)/items/\(itemId)/images", fileData: fileData, fileName: fileName, mimeType: mimeType)
+    }
+
+    func deleteItemImage(tripId: String, itemId: String, imageId: String) async throws {
+        let _: EmptyResponse = try await request(.delete, path: "trips/\(tripId)/items/\(itemId)/images/\(imageId)")
+    }
+
+    func uploadBudgetItemImage(tripId: String, budgetItemId: String, fileData: Data, fileName: String, mimeType: String) async throws -> TripImage {
+        try await uploadMultipart(path: "trips/\(tripId)/budget-items/\(budgetItemId)/images", fileData: fileData, fileName: fileName, mimeType: mimeType)
+    }
+
+    func deleteBudgetItemImage(tripId: String, budgetItemId: String, imageId: String) async throws {
+        let _: EmptyResponse = try await request(.delete, path: "trips/\(tripId)/budget-items/\(budgetItemId)/images/\(imageId)")
+    }
+
+    private func uploadMultipart<Response: Decodable>(path: String, fileData: Data, fileName: String, mimeType: String) async throws -> Response {
         let boundary = "Boundary-\(UUID().uuidString)"
-        let url = baseURL.appendingPathComponent("uploads")
+        let url = baseURL.appendingPathComponent(path)
         var req = URLRequest(url: url)
         req.httpMethod = "POST"
         guard let token = await tokenProvider.currentToken() else { throw APIError.notAuthenticated }
@@ -295,7 +319,7 @@ final class APIClient: Sendable {
             throw APIError.http(status: http.statusCode, body: String(data: data, encoding: .utf8) ?? "")
         }
         do {
-            return try makeDecoder().decode(UploadResult.self, from: data)
+            return try makeDecoder().decode(Response.self, from: data)
         } catch {
             throw APIError.decoding(error)
         }

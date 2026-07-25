@@ -49,6 +49,8 @@ struct PoolItemDetail: Equatable, Hashable {
     var share: Double
     /// What this person actually paid for this item (full price if they're the payer, else 0).
     var paid: Double
+    /// Source `BudgetItem.id` — lets the UI look up `trip.budgetItems[].images`.
+    var budgetItemId: String?
 }
 
 struct TransferRow: Identifiable, Equatable {
@@ -63,6 +65,8 @@ struct TransferRow: Identifiable, Equatable {
 struct TransferPart: Equatable, Hashable {
     var label: String
     var amount: Double
+    /// Source `BudgetItem.id`; nil for merged "Bagi rata" parts (no single item applies).
+    var budgetItemId: String?
 }
 
 // MARK: - Internal balance record
@@ -129,7 +133,8 @@ enum SplitBillCalculator {
                 PoolItemDetail(
                     name: item.name,
                     share: item.price / Double(participantCount),
-                    paid: effectivePayer(item) == p.name ? item.price : 0
+                    paid: effectivePayer(item) == p.name ? item.price : 0,
+                    budgetItemId: item.id
                 )
             }
             // Per-Orang pooled: proportional share = price × headcount / totalHeadcount.
@@ -137,7 +142,8 @@ enum SplitBillCalculator {
                 PoolItemDetail(
                     name: item.name,
                     share: item.price * Double(headcount) / Double(totalHeadcount),
-                    paid: effectivePayer(item) == p.name ? item.price : 0
+                    paid: effectivePayer(item) == p.name ? item.price : 0,
+                    budgetItemId: item.id
                 )
             }
 
@@ -175,7 +181,7 @@ enum SplitBillCalculator {
 
         // Pooled settlement transfers ("Bagi rata").
         let poolTransfers = computeTransfers(balances).map {
-            RawTransfer(from: $0.from, to: $0.to, amount: $0.amount, label: "Bagi rata")
+            RawTransfer(from: $0.from, to: $0.to, amount: $0.amount, label: "Bagi rata", budgetItemId: nil)
         }
 
         // Direct debts appended as-is.
@@ -184,7 +190,8 @@ enum SplitBillCalculator {
                 from: item.pic ?? "",
                 to: item.paidBy ?? (effectivePayer(item) ?? ""),
                 amount: item.price,
-                label: item.name
+                label: item.name,
+                budgetItemId: item.id
             )
         }
 
@@ -198,7 +205,7 @@ enum SplitBillCalculator {
                 order.append(key)
             }
             groups[key]?.total += tr.amount
-            groups[key]?.parts.append(TransferPart(label: tr.label, amount: tr.amount))
+            groups[key]?.parts.append(TransferPart(label: tr.label, amount: tr.amount, budgetItemId: tr.budgetItemId))
         }
         let transfers = order.compactMap { groups[$0] }
 
@@ -217,6 +224,7 @@ enum SplitBillCalculator {
         var to: String
         var amount: Double
         var label: String
+        var budgetItemId: String? = nil
     }
 
     private struct Party {

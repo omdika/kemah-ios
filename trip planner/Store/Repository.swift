@@ -35,6 +35,12 @@ protocol KemahRepository: Sendable {
     func previewInvite(tripId: String, token: String) async throws -> TripPreview
 
     func splitBill(tripId: String) async throws -> SplitBillResponse
+
+    func uploadTripCover(tripId: String, fileData: Data, fileName: String, mimeType: String) async throws -> Trip
+    func uploadItemImage(tripId: String, itemId: String, fileData: Data, fileName: String, mimeType: String) async throws -> TripImage
+    func deleteItemImage(tripId: String, itemId: String, imageId: String) async throws
+    func uploadBudgetItemImage(tripId: String, budgetItemId: String, fileData: Data, fileName: String, mimeType: String) async throws -> TripImage
+    func deleteBudgetItemImage(tripId: String, budgetItemId: String, imageId: String) async throws
 }
 
 // MARK: - Real backend
@@ -94,5 +100,25 @@ final class APIRepository: KemahRepository {
 
     func splitBill(tripId: String) async throws -> SplitBillResponse {
         try await client.getSplitBill(tripId: tripId)
+    }
+
+    func uploadTripCover(tripId: String, fileData: Data, fileName: String, mimeType: String) async throws -> Trip {
+        try await client.uploadTripCover(tripId: tripId, fileData: fileData, fileName: fileName, mimeType: mimeType)
+    }
+
+    func uploadItemImage(tripId: String, itemId: String, fileData: Data, fileName: String, mimeType: String) async throws -> TripImage {
+        try await client.uploadItemImage(tripId: tripId, itemId: itemId, fileData: fileData, fileName: fileName, mimeType: mimeType)
+    }
+
+    func deleteItemImage(tripId: String, itemId: String, imageId: String) async throws {
+        try await client.deleteItemImage(tripId: tripId, itemId: itemId, imageId: imageId)
+    }
+
+    func uploadBudgetItemImage(tripId: String, budgetItemId: String, fileData: Data, fileName: String, mimeType: String) async throws -> TripImage {
+        try await client.uploadBudgetItemImage(tripId: tripId, budgetItemId: budgetItemId, fileData: fileData, fileName: fileName, mimeType: mimeType)
+    }
+
+    func deleteBudgetItemImage(tripId: String, budgetItemId: String, imageId: String) async throws {
+        try await client.deleteBudgetItemImage(tripId: tripId, budgetItemId: budgetItemId, imageId: imageId)
     }
 }

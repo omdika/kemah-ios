@@ -92,7 +92,9 @@ final class TripStore: ObservableObject {
                     share: p.share,
                     balance: p.balance,
                     headcount: p.headcount,
-                    poolDetails: p.poolDetails.map { PoolItemDetail(name: $0.name, share: $0.share, paid: $0.paid) }
+                    poolDetails: p.poolDetails.map {
+                        PoolItemDetail(name: $0.name, share: $0.share, paid: $0.paid, budgetItemId: $0.budgetItemId)
+                    }
                 )
             },
             transfers: response.transfers.map { t in
@@ -100,7 +102,9 @@ final class TripStore: ObservableObject {
                     from: t.from,
                     to: t.to,
                     total: t.total,
-                    parts: t.parts.map { TransferPart(label: $0.label, amount: $0.amount) }
+                    parts: t.parts.map {
+                        TransferPart(label: $0.label, amount: $0.amount, budgetItemId: $0.budgetItemId)
+                    }
                 )
             }
         )
@@ -410,6 +414,49 @@ final class TripStore: ObservableObject {
             try await repository.deleteBudgetItem(tripId: id, budgetItemId: item.id)
             await refreshActive()
             showToast("Pengeluaran dihapus")
+        } catch { errorMessage = error.localizedDescription }
+    }
+
+    // MARK: - Images
+
+    func uploadCoverImage(data: Data, fileName: String, mimeType: String) async {
+        guard let id = activeTrip?.id else { return }
+        do {
+            activeTrip = try await repository.uploadTripCover(tripId: id, fileData: data, fileName: fileName, mimeType: mimeType)
+            await loadTrips()
+            showToast("Foto cover diperbarui")
+        } catch { errorMessage = error.localizedDescription }
+    }
+
+    func uploadItemImage(_ item: ChecklistItem, data: Data, fileName: String, mimeType: String) async {
+        guard let id = activeTrip?.id else { return }
+        do {
+            _ = try await repository.uploadItemImage(tripId: id, itemId: item.id, fileData: data, fileName: fileName, mimeType: mimeType)
+            await refreshActive()
+        } catch { errorMessage = error.localizedDescription }
+    }
+
+    func deleteItemImage(_ item: ChecklistItem, imageId: String) async {
+        guard let id = activeTrip?.id else { return }
+        do {
+            try await repository.deleteItemImage(tripId: id, itemId: item.id, imageId: imageId)
+            await refreshActive()
+        } catch { errorMessage = error.localizedDescription }
+    }
+
+    func uploadBudgetItemImage(_ item: BudgetItem, data: Data, fileName: String, mimeType: String) async {
+        guard let id = activeTrip?.id else { return }
+        do {
+            _ = try await repository.uploadBudgetItemImage(tripId: id, budgetItemId: item.id, fileData: data, fileName: fileName, mimeType: mimeType)
+            await refreshActive()
+        } catch { errorMessage = error.localizedDescription }
+    }
+
+    func deleteBudgetItemImage(_ item: BudgetItem, imageId: String) async {
+        guard let id = activeTrip?.id else { return }
+        do {
+            try await repository.deleteBudgetItemImage(tripId: id, budgetItemId: item.id, imageId: imageId)
+            await refreshActive()
         } catch { errorMessage = error.localizedDescription }
     }
 

@@ -1,6 +1,6 @@
 # API Contract: Kemah
 
-> **Version:** 1.5.0 — see [`CHANGELOG.md`](./CHANGELOG.md). Older snapshots under [`versions/`](./versions/).
+> **Version:** 1.4.1 — see [`CHANGELOG.md`](./CHANGELOG.md). Older snapshots under [`versions/`](./versions/).
 
 Defines the backend contract needed to make the prototype's mocked actions real. Written as REST for portability; if using Firestore/Supabase realtime instead, treat each resource below as a collection/table with the same shape and add realtime listeners on `trips/{id}` and its subcollections instead of polling.
 
@@ -22,13 +22,10 @@ Returns the signed-in user's profile.
 List trips the signed-in user participates in. `checklistProgress` counts only items visible to the caller (group items + the caller's own personal items).
 ```json
 { "trips": [ { "id": "t1", "name": "Camping Gunung Papandayan", "location": "Garut, Jawa Barat",
-    "date": "2026-08-01", "coverUrl": "https://.../cover.jpg",
-    "coverUploadedByName": "Dinda", "coverUploadedAt": "2026-07-20T09:00:00Z",
-    "mapLink": "https://maps.google.com/...",
+    "date": "2026-08-01", "coverUrl": "https://.../cover.jpg", "mapLink": "https://maps.google.com/...",
     "phone": "081234567890", "status": "upcoming", "budgetTarget": 1200000, "budgetMode": "manual",
     "participantCount": 5, "checklistProgress": { "checked": 8, "total": 15 } } ] }
 ```
-**[v1.5.0]** `coverUploadedByName`/`coverUploadedAt` are `null` until someone uploads a cover via `POST /trips/:id/cover` (see Photo Upload section).
 
 ### `POST /trips`
 Create a trip. Creator is auto-added as first participant (`picForLabel: "Koordinator"`, `headcount: 1`).
@@ -48,15 +45,11 @@ Full trip detail including nested lists. **`items` and `budgetItems` are filtere
   "budgetTarget": 1200000, "budgetMode": "manual",
   "participants": [ { "id": "p1", "name": "Dinda", "picForLabel": "Koordinator", "headcount": 1 } ],
   "items": [ { "id": "i1", "name": "Tenda dome 4 orang", "qty": 1, "pic": "Rangga",
-      "note": "cek patok & pasak lengkap", "checked": true, "isPersonal": false, "owner": null,
-      "images": [ { "id": "img1", "url": "https://.../tenda.jpg", "uploadedBy": "u_123",
-          "uploadedByName": "Rangga", "createdAt": "2026-07-21T10:00:00Z" } ] } ],
+      "note": "cek patok & pasak lengkap", "checked": true, "isPersonal": false, "owner": null } ],
   "budgetItems": [ { "id": "b1", "name": "Sewa mobil", "price": 100000,
-      "paidBy": "Dinda", "pic": null, "splitMode": "pic", "isPersonal": false, "owner": null,
-      "images": [] } ]
+      "paidBy": "Dinda", "pic": null, "splitMode": "pic", "isPersonal": false, "owner": null } ]
 }
 ```
-**[v1.5.0]** `items[].images` / `budgetItems[].images` — photo galleries, oldest first. Any participant who can see the item (i.e. it's a group item, or a personal item they own) can add to it; see Photo Upload.
 
 ### `PATCH /trips/:id`
 Partial update — any subset of `name, location, date, mapLink, phone, coverUrl, budgetTarget, budgetMode, status`.
@@ -131,8 +124,8 @@ Any subset of `name, price, paidBy, pic, splitMode, isPersonal`. Toggling `isPer
       "balance": 160000,
       "headcount": 1,
       "poolDetails": [
-        { "name": "Sewa mobil", "share": 50000, "paid": 200000, "budgetItemId": "b1" },
-        { "name": "Kompor + gas", "share": 25000, "paid": 0, "budgetItemId": "b3" }
+        { "name": "Sewa mobil", "share": 50000, "paid": 200000 },
+        { "name": "Kompor + gas", "share": 25000, "paid": 0 }
       ]
     },
     {
@@ -142,8 +135,8 @@ Any subset of `name, price, paidBy, pic, splitMode, isPersonal`. Toggling `isPer
       "balance": -40000,
       "headcount": 1,
       "poolDetails": [
-        { "name": "Sewa mobil", "share": 50000, "paid": 0, "budgetItemId": "b1" },
-        { "name": "Kompor + gas", "share": 25000, "paid": 0, "budgetItemId": "b3" }
+        { "name": "Sewa mobil", "share": 50000, "paid": 0 },
+        { "name": "Kompor + gas", "share": 25000, "paid": 0 }
       ]
     }
   ],
@@ -153,8 +146,8 @@ Any subset of `name, price, paidBy, pic, splitMode, isPersonal`. Toggling `isPer
       "to": "Dinda",
       "total": 40000,
       "parts": [
-        { "label": "Bagi rata", "amount": 20000, "budgetItemId": null },
-        { "label": "Sewa mobil", "amount": 20000, "budgetItemId": "b1" }
+        { "label": "Bagi rata", "amount": 20000 },
+        { "label": "Sewa mobil", "amount": 20000 }
       ]
     }
   ]
@@ -167,7 +160,6 @@ Any subset of `name, price, paidBy, pic, splitMode, isPersonal`. Toggling `isPer
 - `transfers[].total` — merged transfer total. Renamed from `amount` in v1.2.0 and earlier.
 - `transfers[].parts[].amount` — individual part amount (unchanged field name).
 - Pool-derived parts use `label: "Bagi rata"`; direct-debt parts use the expense `name` as the label.
-- **[v1.5.0]** `poolDetails[].budgetItemId` / `transfers[].parts[].budgetItemId` — the source `BudgetItem.id`, so the client can cross-reference `trip.budgetItems[].images` to show photos next to a settlement line. Always present on `poolDetails` (each entry traces to exactly one item); `null` on "Bagi rata" transfer parts (those are merged across many items, so no single item applies) and set on direct-debt parts.
 
 ## Invite (`/trips/:tripId/invite`)
 
@@ -196,31 +188,11 @@ Generates (or returns existing) a shareable join link.
 
 ## Photo Upload
 
-**[v1.5.0]** Any signed-in trip participant can upload a photo to any group entity they can see (cover, checklist item, budget item) — no owner/PIC restriction. Every uploaded image is attributed (`uploadedBy`/`uploadedByName`); only the uploader can delete their own image (`403` otherwise). Personal (`isPersonal: true`) checklist/budget items follow the same visibility rule as the item itself — only the owner can see or upload to them (`404` for anyone else, same as `PATCH`/`DELETE` on those items).
-
 ### `POST /uploads` (multipart/form-data, field `file`)
-Generic upload, no attribution and not attached to anything — returns just a URL. Kept for one-off/manual use; prefer the attached-upload endpoints below for cover/checklist/budget photos, since those persist uploader attribution and (for galleries) the image list.
+Used for both trip cover photos and (future) checklist/receipt photos. Upload to BaaS storage (Firebase Storage / Supabase Storage bucket), return the public/CDN URL.
 ```json
-{ "url": "https://.../file.jpg" }
+{ "url": "https://.../cover-t1.jpg" }
 ```
-
-### `POST /trips/:tripId/cover` (multipart/form-data, field `file`)
-Uploads and sets the trip's cover photo (replacing any existing one) with attribution. Returns the full updated `Trip` (see `GET /trips/:id`).
-
-### Checklist item photos (`/trips/:tripId/items/:itemId/images`)
-
-- **`POST /`** (multipart/form-data, field `file`) — adds a photo to the item's gallery.
-  ```json
-  { "id": "img1", "url": "https://.../photo.jpg", "uploadedBy": "u_123",
-    "uploadedByName": "Rangga", "createdAt": "2026-07-21T10:00:00Z" }
-  ```
-- **`DELETE /:imageId`** — only the uploader may delete; `403` otherwise.
-
-### Budget item photos (`/trips/:tripId/budget-items/:itemId/images`)
-Same shape and rules as checklist item photos above (e.g. attach a receipt).
-
-- **`POST /`** (multipart/form-data, field `file`)
-- **`DELETE /:imageId`**
 
 ## Realtime (recommended over polling)
 If using Firestore/Supabase: subscribe to `trips/{id}` and its `items`, `budgetItems`, `participants` subcollections/tables so all participants see checklist/budget edits live, matching the collaborative intent of "Undang Teman". **[v1.1.0]** Realtime rules/queries must enforce the same per-owner visibility: a participant's subscription must not receive other users' personal `items`/`budgetItems`. The offline indicator in the UI should reflect the SDK's actual connection state (Firestore/Supabase both expose this) rather than the mocked toggle in the prototype.
