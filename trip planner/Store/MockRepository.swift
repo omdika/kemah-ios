@@ -29,7 +29,9 @@ actor MockRepository: KemahRepository {
             let checked = items.filter(\.checked).count
             return TripSummary(
                 id: trip.id, name: trip.name, location: trip.location, date: trip.date,
-                coverUrl: trip.coverUrl, mapLink: trip.mapLink, phone: trip.phone,
+                coverUrl: trip.coverUrl,
+                coverUploadedByName: trip.coverUploadedByName, coverUploadedAt: trip.coverUploadedAt,
+                mapLink: trip.mapLink, phone: trip.phone, docsLink: trip.docsLink,
                 status: trip.status, budgetTarget: trip.budgetTarget, budgetMode: trip.budgetMode,
                 participantCount: trip.participants.count,
                 checklistProgress: ChecklistProgress(checked: checked, total: items.count)
