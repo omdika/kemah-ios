@@ -16,13 +16,17 @@ struct SplitBillView: View {
     @State private var paid: Set<String> = []
     @State private var expanded: Set<String> = []
 
-    /// The distinct budget items behind a transfer's parts (usually one direct-debt
-    /// item, but a "from/to" pair can carry several — e.g. Ria owing Irma for both
-    /// Museum Angkut and Safari Prigen merges into one transfer with two parts).
+    /// The distinct budget items behind a transfer's parts.
+    /// Direct-debt parts carry an explicit budgetItemId; pooled "Bagi rata" parts
+    /// don't, so we fall back to all non-personal items paid by the recipient (t.to)
+    /// — those are exactly the expenses the sender owes the recipient for.
     private func transferBudgetItems(_ t: TransferRow) -> [BudgetItem] {
         guard let trip = store.activeTrip else { return [] }
         let ids = Set(t.parts.compactMap(\.budgetItemId))
-        return trip.budgetItems.filter { ids.contains($0.id) }
+        if !ids.isEmpty {
+            return trip.budgetItems.filter { ids.contains($0.id) }
+        }
+        return trip.budgetItems.filter { !$0.isPersonal && $0.paidBy == t.to }
     }
 
     /// Single thumbnail strip for a transfer row, aggregating photos across all
