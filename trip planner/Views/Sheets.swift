@@ -72,6 +72,96 @@ struct NewTripSheet: View {
     }
 }
 
+// MARK: - Edit Detail Trip
+
+struct EditTripSheet: View {
+    @EnvironmentObject private var store: TripStore
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var name: String
+    @State private var location: String
+    @State private var date: Date
+    @State private var mapLink: String
+    @State private var phone: String
+    @State private var docsLink: String
+
+    init(trip: Trip) {
+        _name = State(initialValue: trip.name)
+        _location = State(initialValue: trip.location)
+        _date = State(initialValue: EditTripSheet.parseISODate(trip.date))
+        _mapLink = State(initialValue: trip.mapLink ?? "")
+        _phone = State(initialValue: trip.phone ?? "")
+        _docsLink = State(initialValue: trip.docsLink ?? "")
+    }
+
+    private static func parseISODate(_ iso: String) -> Date {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.dateFormat = "yyyy-MM-dd"
+        return f.date(from: iso) ?? Date()
+    }
+
+    private var isoDate: String {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.dateFormat = "yyyy-MM-dd"
+        return f.string(from: date)
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 16) {
+                    LabeledField(title: "Nama Trip", placeholder: "Camping Kawah Putih", text: $name)
+                    LabeledField(title: "Lokasi", placeholder: "Bandung", text: $location)
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Tanggal").font(.footnote.weight(.semibold)).foregroundStyle(Theme.textMuted)
+                        DatePicker("", selection: $date, displayedComponents: .date)
+                            .datePickerStyle(.compact)
+                            .labelsHidden()
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    LabeledField(title: "Link Peta (opsional)", placeholder: "https://maps.google.com/...", text: $mapLink)
+                    LabeledField(title: "No. WhatsApp Admin (opsional)", placeholder: "08xxxxxxxxxx", text: $phone, keyboard: .phonePad)
+                    LabeledField(title: "Link Dokumentasi (opsional)", placeholder: "https://drive.google.com/...", text: $docsLink)
+
+                    PrimaryButton(title: "Simpan", color: store.accent.color) {
+                        Task {
+                            await store.updateActiveTrip(
+                                UpdateTripRequest(
+                                    name: name.trimmingCharacters(in: .whitespaces),
+                                    location: location.trimmingCharacters(in: .whitespaces),
+                                    date: isoDate,
+                                    mapLink: mapLink,
+                                    phone: phone,
+                                    docsLink: docsLink
+                                ),
+                                toast: "Detail trip diperbarui"
+                            )
+                            dismiss()
+                        }
+                    }
+                    .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .padding(.top, 8)
+                }
+                .padding(20)
+            }
+            .background(Theme.background)
+            .navigationTitle("Edit Detail Trip")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Batal") { dismiss() }
+                }
+            }
+        }
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
+    }
+}
+
 // MARK: - Edit Peran
 
 struct RoleSheet: View {

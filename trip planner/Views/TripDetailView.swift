@@ -19,6 +19,7 @@ struct TripDetailView: View {
     @State private var showInvite = false
     @State private var showBudgetAdd = false
     @State private var showChecklistAdd = false
+    @State private var showEditTrip = false
     @State private var checklistIsPersonal = false
     @State private var coverPickerItem: PhotosPickerItem?
     @State private var isUploadingCover = false
@@ -78,6 +79,11 @@ struct TripDetailView: View {
                 ItemSheet(trip: trip, existing: nil, isPersonal: checklistIsPersonal)
             }
         }
+        .sheet(isPresented: $showEditTrip) {
+            if let trip = store.activeTrip {
+                EditTripSheet(trip: trip)
+            }
+        }
         .onChange(of: coverPickerItem) { newItem in
             guard let newItem else { return }
             Task {
@@ -107,9 +113,17 @@ struct TripDetailView: View {
                     Spacer()
                     AvatarStack(names: trip.participants.map(\.name))
                 }
-                Text(trip.name)
-                    .font(.rounded(26, weight: .bold))
-                    .foregroundStyle(.white)
+                HStack(spacing: 8) {
+                    Text(trip.name)
+                        .font(.rounded(26, weight: .bold))
+                        .foregroundStyle(.white)
+                    Button { showEditTrip = true } label: {
+                        Image(systemName: "pencil.circle.fill")
+                            .font(.title3)
+                            .foregroundStyle(.white.opacity(0.85))
+                    }
+                    .buttonStyle(.plain)
+                }
                 Text("\(trip.location) · \(Formatters.dateLabel(trip.date))")
                     .font(.subheadline)
                     .foregroundStyle(.white.opacity(0.9))
