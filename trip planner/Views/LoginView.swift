@@ -2,9 +2,10 @@
 //  LoginView.swift
 //  trip planner
 //
-//  Auth entry. The prototype shows Google/Facebook/Apple buttons; on iOS these
-//  should become real `Sign in with Apple` + Google Sign-In. Here they trigger
-//  the store's (mock) sign-in and enter the app.
+//  Auth entry. Google Sign-In is real (TripStore.signInWithGoogle); Apple is
+//  still a mocked stub pending a paid Apple Developer account (needed for the
+//  Sign in with Apple capability). Facebook was removed — no clean native
+//  Supabase integration path (see conversation notes) and no real demand yet.
 //
 
 import SwiftUI
@@ -18,9 +19,6 @@ struct LoginView: View {
             VStack(spacing: 12) {
                 authButton(title: "Lanjutkan dengan Google", system: "g.circle.fill", filled: false) {
                     Task { await store.signInWithGoogle() }
-                }
-                authButton(title: "Lanjutkan dengan Facebook", system: "f.circle.fill", filled: false) {
-                    Task { await store.signIn() }
                 }
                 authButton(title: "Masuk dengan Apple", system: "apple.logo", filled: true) {
                     Task { await store.signIn() }
