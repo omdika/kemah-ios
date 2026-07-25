@@ -251,13 +251,12 @@ struct SplitBillView: View {
                     .foregroundStyle(Theme.textSubtle)
                     .padding(.bottom, 4)
                 ForEach(Array(oweItems.enumerated()), id: \.offset) { _, detail in
-                    HStack(alignment: .center) {
+                    HStack(alignment: .firstTextBaseline) {
                         Text(detail.name)
                             .font(.caption)
                             .foregroundStyle(Theme.textMuted)
                             .lineLimit(1)
                         Spacer(minLength: 8)
-                        imageStrip(for: detail.budgetItemId)
                         Text(Formatters.rp(detail.share))
                             .font(.caption)
                             .foregroundStyle(Theme.textMuted)
@@ -273,13 +272,12 @@ struct SplitBillView: View {
                     .foregroundStyle(Theme.textSubtle)
                     .padding(.top, 8).padding(.bottom, 4)
                 ForEach(Array(paidItems.enumerated()), id: \.offset) { _, detail in
-                    HStack(alignment: .center) {
+                    HStack(alignment: .firstTextBaseline) {
                         Text(detail.name)
                             .font(.caption)
                             .foregroundStyle(Theme.credit)
                             .lineLimit(1)
                         Spacer(minLength: 8)
-                        imageStrip(for: detail.budgetItemId)
                         Text("−\(Formatters.rp(detail.paid))")
                             .font(.caption)
                             .foregroundStyle(Theme.credit)
