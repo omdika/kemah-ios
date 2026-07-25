@@ -419,13 +419,23 @@ final class TripStore: ObservableObject {
 
     // MARK: - Images
 
+    /// Cover upload for the currently open trip (Trip Detail's camera button).
     func uploadCoverImage(data: Data, fileName: String, mimeType: String) async {
         guard let id = activeTrip?.id else { return }
+        await uploadCoverImage(tripId: id, data: data, fileName: fileName, mimeType: mimeType)
+    }
+
+    /// Cover upload for an arbitrary trip (e.g. the Home list, where the
+    /// tapped card's trip may not be `activeTrip`).
+    func uploadCoverImage(tripId: String, data: Data, fileName: String, mimeType: String) async {
         do {
-            activeTrip = try await repository.uploadTripCover(tripId: id, fileData: data, fileName: fileName, mimeType: mimeType)
+            let updated = try await repository.uploadTripCover(tripId: tripId, fileData: data, fileName: fileName, mimeType: mimeType)
+            if activeTrip?.id == tripId { activeTrip = updated }
             await loadTrips()
             showToast("Foto cover diperbarui")
-        } catch { errorMessage = error.localizedDescription }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
 
     func uploadItemImage(_ item: ChecklistItem, data: Data, fileName: String, mimeType: String) async {

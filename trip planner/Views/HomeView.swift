@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct HomeView: View {
     @EnvironmentObject private var store: TripStore
@@ -52,7 +53,9 @@ struct HomeView: View {
                                     path.append(.trip(trip.id))
                                 }
                             } label: {
-                                UpcomingTripCard(trip: trip)
+                                UpcomingTripCard(trip: trip) { data in
+                                    await store.uploadCoverImage(tripId: trip.id, data: data, fileName: "cover.jpg", mimeType: "image/jpeg")
+                                }
                             }
                             .buttonStyle(.plain)
                         }
@@ -69,6 +72,8 @@ struct HomeView: View {
                                     await store.openTrip(id: trip.id)
                                     path.append(.trip(trip.id))
                                 }
+                            } uploadCover: { data in
+                                await store.uploadCoverImage(tripId: trip.id, data: data, fileName: "cover.jpg", mimeType: "image/jpeg")
                             }
                         }
                     }
@@ -160,12 +165,19 @@ struct HomeView: View {
 
 struct UpcomingTripCard: View {
     let trip: TripSummary
+    let uploadCover: (Data) async -> Void
+
+    @State private var pickerItem: PhotosPickerItem?
+    @State private var isUploadingCover = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            CoverImage(url: trip.coverUrl, seed: trip.id)
-                .frame(height: 140)
-                .clipped()
+            ZStack(alignment: .topTrailing) {
+                CoverImage(url: trip.coverUrl, seed: trip.id)
+                    .frame(height: 140)
+                    .clipped()
+                coverEditButton
+            }
 
             VStack(alignment: .leading, spacing: 10) {
                 Text(trip.name)
@@ -192,6 +204,34 @@ struct UpcomingTripCard: View {
             .padding(14)
         }
         .cardStyle()
+        .onChange(of: pickerItem) { newItem in
+            guard let newItem else { return }
+            Task {
+                isUploadingCover = true
+                if let data = try? await newItem.loadTransferable(type: Data.self) {
+                    await uploadCover(data)
+                }
+                isUploadingCover = false
+                pickerItem = nil
+            }
+        }
+    }
+
+    private var coverEditButton: some View {
+        PhotosPicker(selection: $pickerItem, matching: .images) {
+            ZStack {
+                Circle().fill(.black.opacity(0.35))
+                if isUploadingCover {
+                    ProgressView().tint(.white)
+                } else {
+                    Image(systemName: "camera.fill").font(.footnote).foregroundStyle(.white)
+                }
+            }
+            .frame(width: 30, height: 30)
+        }
+        .buttonStyle(.plain)
+        .disabled(isUploadingCover)
+        .padding(8)
     }
 }
 
@@ -201,12 +241,19 @@ struct HistoryTripRow: View {
     let trip: TripSummary
     let share: () -> Void
     let open: () -> Void
+    let uploadCover: (Data) async -> Void
+
+    @State private var pickerItem: PhotosPickerItem?
+    @State private var isUploadingCover = false
 
     var body: some View {
         HStack(spacing: 12) {
-            CoverImage(url: trip.coverUrl, seed: trip.id)
-                .frame(width: 52, height: 52)
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            ZStack(alignment: .bottomTrailing) {
+                CoverImage(url: trip.coverUrl, seed: trip.id)
+                    .frame(width: 52, height: 52)
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                coverEditButton
+            }
             VStack(alignment: .leading, spacing: 2) {
                 Text(trip.name)
                     .font(.subheadline.weight(.semibold))
@@ -228,6 +275,34 @@ struct HistoryTripRow: View {
         .cardStyle(radius: 14)
         .contentShape(Rectangle())
         .onTapGesture(perform: open)
+        .onChange(of: pickerItem) { newItem in
+            guard let newItem else { return }
+            Task {
+                isUploadingCover = true
+                if let data = try? await newItem.loadTransferable(type: Data.self) {
+                    await uploadCover(data)
+                }
+                isUploadingCover = false
+                pickerItem = nil
+            }
+        }
+    }
+
+    private var coverEditButton: some View {
+        PhotosPicker(selection: $pickerItem, matching: .images) {
+            ZStack {
+                Circle().fill(.black.opacity(0.45))
+                if isUploadingCover {
+                    ProgressView().tint(.white).scaleEffect(0.5)
+                } else {
+                    Image(systemName: "camera.fill").font(.system(size: 9)).foregroundStyle(.white)
+                }
+            }
+            .frame(width: 20, height: 20)
+        }
+        .buttonStyle(.plain)
+        .disabled(isUploadingCover)
+        .padding(3)
     }
 }
 
