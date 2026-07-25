@@ -21,13 +21,6 @@ struct NewTripSheet: View {
     @State private var phone = ""
     @State private var docsLink = ""
 
-    private var isoDate: String {
-        let f = DateFormatter()
-        f.locale = Locale(identifier: "en_US_POSIX")
-        f.dateFormat = "yyyy-MM-dd"
-        return f.string(from: date)
-    }
-
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -49,7 +42,7 @@ struct NewTripSheet: View {
 
                     PrimaryButton(title: "Buat Trip", color: store.accent.color) {
                         Task {
-                            await store.createTrip(name: name, location: location, date: isoDate, mapLink: mapLink, phone: phone, docsLink: docsLink, coverUrl: "")
+                            await store.createTrip(name: name, location: location, date: Formatters.isoDateString(from: date), mapLink: mapLink, phone: phone, docsLink: docsLink, coverUrl: "")
                             dismiss()
                         }
                     }
@@ -88,24 +81,10 @@ struct EditTripSheet: View {
     init(trip: Trip) {
         _name = State(initialValue: trip.name)
         _location = State(initialValue: trip.location)
-        _date = State(initialValue: EditTripSheet.parseISODate(trip.date))
+        _date = State(initialValue: Formatters.date(fromISODate: trip.date) ?? Date())
         _mapLink = State(initialValue: trip.mapLink ?? "")
         _phone = State(initialValue: trip.phone ?? "")
         _docsLink = State(initialValue: trip.docsLink ?? "")
-    }
-
-    private static func parseISODate(_ iso: String) -> Date {
-        let f = DateFormatter()
-        f.locale = Locale(identifier: "en_US_POSIX")
-        f.dateFormat = "yyyy-MM-dd"
-        return f.date(from: iso) ?? Date()
-    }
-
-    private var isoDate: String {
-        let f = DateFormatter()
-        f.locale = Locale(identifier: "en_US_POSIX")
-        f.dateFormat = "yyyy-MM-dd"
-        return f.string(from: date)
     }
 
     var body: some View {
@@ -120,6 +99,10 @@ struct EditTripSheet: View {
                         DatePicker("", selection: $date, displayedComponents: .date)
                             .datePickerStyle(.compact)
                             .labelsHidden()
+                            // Pinned to UTC to match Formatters.date(fromISODate:)/
+                            // isoDateString(from:) exactly — otherwise a device
+                            // timezone behind UTC can display/re-save a day earlier.
+                            .environment(\.timeZone, TimeZone(identifier: "UTC")!)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -133,7 +116,7 @@ struct EditTripSheet: View {
                                 UpdateTripRequest(
                                     name: name.trimmingCharacters(in: .whitespaces),
                                     location: location.trimmingCharacters(in: .whitespaces),
-                                    date: isoDate,
+                                    date: Formatters.isoDateString(from: date),
                                     mapLink: mapLink,
                                     phone: phone,
                                     docsLink: docsLink
