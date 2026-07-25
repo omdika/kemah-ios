@@ -16,18 +16,29 @@ struct SplitBillView: View {
     @State private var paid: Set<String> = []
     @State private var expanded: Set<String> = []
 
-    private func budgetItem(for id: String?) -> BudgetItem? {
-        guard let id else { return nil }
-        return store.activeTrip?.budgetItems.first { $0.id == id }
+    /// The distinct budget items behind a transfer's parts (usually one direct-debt
+    /// item, but a "from/to" pair can carry several — e.g. Ria owing Irma for both
+    /// Museum Angkut and Safari Prigen merges into one transfer with two parts).
+    private func transferBudgetItems(_ t: TransferRow) -> [BudgetItem] {
+        guard let trip = store.activeTrip else { return [] }
+        let ids = Set(t.parts.compactMap(\.budgetItemId))
+        return trip.budgetItems.filter { ids.contains($0.id) }
     }
 
-    private func imageStrip(for budgetItemId: String?) -> some View {
+    /// Single thumbnail strip for a transfer row, aggregating photos across all
+    /// of its underlying budget items. Uploads attach to the first item; deletes
+    /// route to whichever item actually owns the tapped photo.
+    private func imageStrip(for items: [BudgetItem]) -> some View {
         Group {
-            if let item = budgetItem(for: budgetItemId) {
+            if let firstItem = items.first {
                 ImageStripButton(
-                    images: item.images, size: 26, currentUserId: store.user?.id,
-                    onUpload: { data in await store.uploadBudgetItemImage(item, data: data, fileName: "photo.jpg", mimeType: "image/jpeg") },
-                    onDelete: { imageId in await store.deleteBudgetItemImage(item, imageId: imageId) }
+                    images: items.flatMap(\.images), size: 26, currentUserId: store.user?.id,
+                    onUpload: { data in await store.uploadBudgetItemImage(firstItem, data: data, fileName: "photo.jpg", mimeType: "image/jpeg") },
+                    onDelete: { imageId in
+                        if let owner = items.first(where: { item in item.images.contains { $0.id == imageId } }) {
+                            await store.deleteBudgetItemImage(owner, imageId: imageId)
+                        }
+                    }
                 )
             }
         }
@@ -182,6 +193,7 @@ struct SplitBillView: View {
                     }
                 }
                 Spacer()
+                imageStrip(for: transferBudgetItems(t))
                 Text(Formatters.rp(t.total))
                     .font(.subheadline.weight(.bold))
                     .foregroundStyle(Theme.textPrimary)
@@ -203,7 +215,6 @@ struct SplitBillView: View {
                             HStack {
                                 Text(part.label).font(.caption).foregroundStyle(Theme.textMuted)
                                 Spacer()
-                                imageStrip(for: part.budgetItemId)
                                 Text(Formatters.rp(part.amount))
                                     .font(.caption.weight(.semibold)).foregroundStyle(Theme.textMuted)
                             }
