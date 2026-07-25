@@ -86,7 +86,7 @@ struct LoginView: View {
             .padding(.horizontal, 18)
             .padding(.vertical, 15)
             .frame(maxWidth: .infinity)
-            .background(filled ? Theme.textPrimary : Theme.surface)
+            .background(filled ? Theme.inkFixed : Theme.surface)
             .foregroundStyle(filled ? Color.white : Theme.textPrimary)
             .clipShape(RoundedRectangle(cornerRadius: Theme.pillRadius, style: .continuous))
             .overlay(

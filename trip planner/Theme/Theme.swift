@@ -60,6 +60,12 @@ enum Theme {
     static let textMuted = Color(UIColor.secondaryLabel)
     static let textSubtle = Color(UIColor.tertiaryLabel)
 
+    /// Fixed (non-adaptive) warm near-black — for "always dark filled" pills
+    /// (e.g. the Apple Sign-In button, selected chips) that pair a hardcoded
+    /// light foreground and must not collapse to it when the system flips to
+    /// dark mode, unlike `textPrimary` which tracks `UIColor.label`.
+    static let inkFixed = Color(hex: "241408")
+
     // Settlement semantics
     static let credit = Color(hex: "2E8A5E")         // positive — "menerima"
     static let debit = Color(hex: "DE5A2A")          // negative — "bayar"

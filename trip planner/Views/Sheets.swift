@@ -94,7 +94,7 @@ struct RoleSheet: View {
                 VStack(alignment: .leading, spacing: 16) {
                     LabeledField(title: "Peran", placeholder: "PIC ...", text: $role)
 
-                    FlowChips(items: presets, selected: role) { role = $0 }
+                    FlowChips(items: presets, selected: role, accent: store.accent.color) { role = $0 }
 
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Jumlah Orang").font(.footnote.weight(.semibold)).foregroundStyle(Theme.textMuted)
@@ -129,6 +129,7 @@ struct RoleSheet: View {
 struct FlowChips: View {
     let items: [String]
     let selected: String
+    var accent: Color = Theme.inkFixed
     let onTap: (String) -> Void
 
     var body: some View {
@@ -139,7 +140,7 @@ struct FlowChips: View {
                         .font(.caption.weight(.semibold))
                         .padding(.horizontal, 12).padding(.vertical, 8)
                         .frame(maxWidth: .infinity)
-                        .background(selected == item ? Theme.textPrimary : Theme.surface)
+                        .background(selected == item ? accent : Theme.surface)
                         .foregroundStyle(selected == item ? Color.white : Theme.textPrimary)
                         .clipShape(RoundedRectangle(cornerRadius: Theme.chipRadius, style: .continuous))
                         .overlay(

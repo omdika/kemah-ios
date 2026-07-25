@@ -251,7 +251,7 @@ struct LabeledField: View {
 
 struct PrimaryButton: View {
     let title: String
-    var color: Color = Theme.textPrimary
+    var color: Color = Theme.inkFixed
     let action: () -> Void
 
     var body: some View {
