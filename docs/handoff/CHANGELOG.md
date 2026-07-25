@@ -5,6 +5,15 @@ Versioning is semantic-ish: MAJOR for breaking model/flow changes, MINOR for new
 
 Each released version is archived verbatim under [`versions/`](./versions/); the files at the handoff root are always the latest.
 
+## [1.4.1] — 2026-07-25
+
+### Added
+
+**Invite links now resolve to something even without Universal Links**
+- Invite links now point at this backend's own Cloud Run URL (`https://kemah-sg-....run.app/join/:tripId`) instead of the unowned `kemah.app` placeholder — no domain purchase needed, since a Cloud Run service's default URL is already a real, backend-controlled HTTPS domain.
+- `GET /.well-known/apple-app-site-association` — added so Universal Links can be turned on later with zero backend changes, once a paid Apple Developer account exists (Associated Domains requires it; not available today).
+- `GET /join/:tripId` — new fallback landing page. Since Universal Links can't intercept yet, tapping an invite link always opens this in Safari first; it auto-attempts the `kemah://` custom scheme (silently no-ops if the app isn't installed) with a visible "Buka di App Kemah" button as backup, and an honest "not on the App Store yet" message otherwise. Validates the token before revealing the trip name.
+
 ## [1.4.0] — 2026-07-24
 
 ### Added
