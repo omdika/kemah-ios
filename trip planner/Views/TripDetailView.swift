@@ -119,6 +119,9 @@ struct TripDetailView: View {
                     if let map = trip.mapLink, !map.isEmpty, let url = URL(string: map) {
                         pill("Lihat Peta", "mappin.and.ellipse") { openURL(url) }
                     }
+                    if let docs = trip.docsLink, !docs.isEmpty, let url = URL(string: docs) {
+                        pill("Dokumentasi", "doc.text.fill") { openURL(url) }
+                    }
                     if let wa = Formatters.waLink(for: trip.phone) {
                         pill("Chat Admin", "message.fill") { openURL(wa) }
                     }

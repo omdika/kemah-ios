@@ -19,6 +19,7 @@ struct NewTripSheet: View {
     @State private var date = Date()
     @State private var mapLink = ""
     @State private var phone = ""
+    @State private var docsLink = ""
 
     private var isoDate: String {
         let f = DateFormatter()
@@ -44,10 +45,11 @@ struct NewTripSheet: View {
 
                     LabeledField(title: "Link Peta (opsional)", placeholder: "https://maps.google.com/...", text: $mapLink)
                     LabeledField(title: "No. WhatsApp Admin (opsional)", placeholder: "08xxxxxxxxxx", text: $phone, keyboard: .phonePad)
+                    LabeledField(title: "Link Dokumentasi (opsional)", placeholder: "https://drive.google.com/...", text: $docsLink)
 
                     PrimaryButton(title: "Buat Trip", color: store.accent.color) {
                         Task {
-                            await store.createTrip(name: name, location: location, date: isoDate, mapLink: mapLink, phone: phone, coverUrl: "")
+                            await store.createTrip(name: name, location: location, date: isoDate, mapLink: mapLink, phone: phone, docsLink: docsLink, coverUrl: "")
                             dismiss()
                         }
                     }

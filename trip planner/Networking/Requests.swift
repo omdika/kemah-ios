@@ -17,6 +17,7 @@ struct CreateTripRequest: Encodable {
     var date: String
     var mapLink: String
     var phone: String
+    var docsLink: String
     var coverUrl: String
 }
 
@@ -26,6 +27,7 @@ struct UpdateTripRequest: Encodable {
     var date: String?
     var mapLink: String?
     var phone: String?
+    var docsLink: String?
     var coverUrl: String?
     var budgetTarget: Double?
     var budgetMode: BudgetMode?

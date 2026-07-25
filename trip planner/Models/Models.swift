@@ -53,6 +53,7 @@ struct TripSummary: Codable, Identifiable, Hashable {
     var coverUploadedAt: String? = nil
     var mapLink: String?
     var phone: String?
+    var docsLink: String? = nil
     var status: TripStatus
     var budgetTarget: Double
     var budgetMode: BudgetMode
@@ -72,6 +73,7 @@ struct Trip: Codable, Identifiable, Hashable {
     var coverUploadedAt: String? = nil
     var mapLink: String?
     var phone: String?
+    var docsLink: String? = nil
     var status: TripStatus
     var budgetTarget: Double
     var budgetMode: BudgetMode

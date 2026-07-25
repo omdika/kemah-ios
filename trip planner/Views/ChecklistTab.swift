@@ -209,14 +209,16 @@ struct ChecklistRow: View {
                 }
             }
             Spacer()
-            ImageStripButton(
-                images: item.images, size: 32, currentUserId: currentUserId,
-                onUpload: uploadImage, onDelete: deleteImage
-            )
-            Button(action: remove) {
-                Image(systemName: "xmark").font(.caption.weight(.bold)).foregroundStyle(Theme.textSubtle)
+            VStack(alignment: .trailing, spacing: 4) {
+                Button(action: remove) {
+                    Image(systemName: "xmark").font(.caption.weight(.bold)).foregroundStyle(Theme.textSubtle)
+                }
+                .buttonStyle(.plain)
+                ImageStripButton(
+                    images: item.images, size: 28, currentUserId: currentUserId,
+                    onUpload: uploadImage, onDelete: deleteImage
+                )
             }
-            .buttonStyle(.plain)
         }
         .padding(12)
         .cardStyle(radius: 12)

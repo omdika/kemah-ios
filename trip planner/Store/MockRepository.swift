@@ -50,6 +50,7 @@ actor MockRepository: KemahRepository {
             coverUrl: body.coverUrl.isEmpty ? nil : body.coverUrl,
             mapLink: body.mapLink.isEmpty ? nil : body.mapLink,
             phone: body.phone.isEmpty ? nil : body.phone,
+            docsLink: body.docsLink.isEmpty ? nil : body.docsLink,
             status: .upcoming, budgetTarget: 0, budgetMode: .auto,
             participants: [creator], items: [], budgetItems: []
         )
@@ -64,6 +65,7 @@ actor MockRepository: KemahRepository {
             if let v = body.date { t.date = v }
             if let v = body.mapLink { t.mapLink = v.isEmpty ? nil : v }
             if let v = body.phone { t.phone = v.isEmpty ? nil : v }
+            if let v = body.docsLink { t.docsLink = v.isEmpty ? nil : v }
             if let v = body.coverUrl { t.coverUrl = v.isEmpty ? nil : v }
             if let v = body.budgetTarget { t.budgetTarget = v }
             if let v = body.budgetMode { t.budgetMode = v }

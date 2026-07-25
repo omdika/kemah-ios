@@ -302,10 +302,10 @@ final class TripStore: ObservableObject {
         }
     }
 
-    func createTrip(name: String, location: String, date: String, mapLink: String, phone: String, coverUrl: String) async {
+    func createTrip(name: String, location: String, date: String, mapLink: String, phone: String, docsLink: String = "", coverUrl: String) async {
         do {
             let trip = try await repository.createTrip(
-                CreateTripRequest(name: name, location: location, date: date, mapLink: mapLink, phone: phone, coverUrl: coverUrl)
+                CreateTripRequest(name: name, location: location, date: date, mapLink: mapLink, phone: phone, docsLink: docsLink, coverUrl: coverUrl)
             )
             await loadTrips()
             activeTrip = trip

@@ -161,7 +161,7 @@ struct SplitBillView: View {
         let isPaid = paid.contains(t.id)
         let isExpanded = expanded.contains(t.id)
         return VStack(spacing: 0) {
-            HStack(spacing: 12) {
+            HStack(alignment: .top, spacing: 12) {
                 Button {
                     if isPaid { paid.remove(t.id) } else { paid.insert(t.id) }
                 } label: {
@@ -197,13 +197,17 @@ struct SplitBillView: View {
                     }
                 }
                 Spacer()
-                imageStrip(for: transferBudgetItems(t))
-                Text(Formatters.rp(t.total))
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(Theme.textPrimary)
-                if t.hasParts {
-                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                        .font(.caption).foregroundStyle(Theme.textSubtle)
+                VStack(alignment: .trailing, spacing: 4) {
+                    HStack(spacing: 4) {
+                        Text(Formatters.rp(t.total))
+                            .font(.subheadline.weight(.bold))
+                            .foregroundStyle(Theme.textPrimary)
+                        if t.hasParts {
+                            Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                                .font(.caption).foregroundStyle(Theme.textSubtle)
+                        }
+                    }
+                    imageStrip(for: transferBudgetItems(t))
                 }
             }
             .strikethrough(isPaid)

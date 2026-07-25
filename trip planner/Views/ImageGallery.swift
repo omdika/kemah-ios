@@ -20,14 +20,14 @@ struct ImageStripButton: View {
     let onUpload: (Data) async -> Void
     let onDelete: (String) async -> Void
 
-    @State private var pickerItem: PhotosPickerItem?
+    @State private var pickerItems: [PhotosPickerItem] = []
     @State private var isUploading = false
     @State private var showGallery = false
 
     var body: some View {
         Group {
             if images.isEmpty {
-                PhotosPicker(selection: $pickerItem, matching: .images) {
+                PhotosPicker(selection: $pickerItems, maxSelectionCount: 10, matching: .images) {
                     ZStack {
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
                             .strokeBorder(Theme.neutralPillBg, style: StrokeStyle(lineWidth: 1.2, dash: [3, 3]))
@@ -61,15 +61,17 @@ struct ImageStripButton: View {
                 .buttonStyle(.plain)
             }
         }
-        .onChange(of: pickerItem) { newItem in
-            guard let newItem else { return }
+        .onChange(of: pickerItems) { newItems in
+            guard !newItems.isEmpty else { return }
             Task {
                 isUploading = true
-                if let data = try? await newItem.loadTransferable(type: Data.self) {
-                    await onUpload(data)
+                for item in newItems {
+                    if let data = try? await item.loadTransferable(type: Data.self) {
+                        await onUpload(data)
+                    }
                 }
                 isUploading = false
-                pickerItem = nil
+                pickerItems = []
             }
         }
         .sheet(isPresented: $showGallery) {
@@ -101,8 +103,9 @@ struct ImageGalleryModal: View {
     let onDelete: (String) async -> Void
 
     @State private var page = 0
-    @State private var pickerItem: PhotosPickerItem?
+    @State private var pickerItems: [PhotosPickerItem] = []
     @State private var isBusy = false
+    @State private var downloadToast: String?
 
     var body: some View {
         NavigationStack {
@@ -121,6 +124,19 @@ struct ImageGalleryModal: View {
                 }
             }
             .background(Color.black.ignoresSafeArea())
+            .overlay(alignment: .top) {
+                if let msg = downloadToast {
+                    Text(msg)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 14).padding(.vertical, 8)
+                        .background(Color.black.opacity(0.75))
+                        .clipShape(Capsule())
+                        .padding(.top, 8)
+                        .transition(.opacity)
+                }
+            }
+            .animation(.easeInOut(duration: 0.25), value: downloadToast)
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
@@ -129,7 +145,7 @@ struct ImageGalleryModal: View {
                     Button("Tutup") { dismiss() }
                 }
                 ToolbarItem(placement: .primaryAction) {
-                    PhotosPicker(selection: $pickerItem, matching: .images) {
+                    PhotosPicker(selection: $pickerItems, maxSelectionCount: 10, matching: .images) {
                         if isBusy {
                             ProgressView().tint(.white)
                         } else {
@@ -140,21 +156,42 @@ struct ImageGalleryModal: View {
                 }
             }
         }
-        .onChange(of: pickerItem) { newItem in
-            guard let newItem else { return }
+        .onChange(of: pickerItems) { newItems in
+            guard !newItems.isEmpty else { return }
             Task {
                 isBusy = true
-                if let data = try? await newItem.loadTransferable(type: Data.self) {
-                    await onUpload(data)
+                for item in newItems {
+                    if let data = try? await item.loadTransferable(type: Data.self) {
+                        await onUpload(data)
+                    }
                 }
                 isBusy = false
-                pickerItem = nil
+                pickerItems = []
             }
         }
         .onChange(of: images.count) { newCount in
             if newCount == 0 { dismiss() } else if page >= newCount { page = newCount - 1 }
         }
         .preferredColorScheme(.dark)
+    }
+
+    private func downloadImage(_ image: TripImage) async {
+        guard let url = URL(string: image.url),
+              let (data, _) = try? await URLSession.shared.data(from: url),
+              let uiImage = UIImage(data: data) else {
+            showDownloadToast("Gagal mengunduh foto")
+            return
+        }
+        UIImageWriteToSavedPhotosAlbum(uiImage, nil, nil, nil)
+        showDownloadToast("Foto disimpan ke Foto")
+    }
+
+    private func showDownloadToast(_ msg: String) {
+        downloadToast = msg
+        Task {
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            downloadToast = nil
+        }
     }
 
     private func imagePage(_ image: TripImage) -> some View {
@@ -181,19 +218,39 @@ struct ImageGalleryModal: View {
                         .foregroundStyle(.white.opacity(0.65))
                 }
                 Spacer()
-                if image.uploadedBy == currentUserId {
-                    Button {
-                        Task {
-                            isBusy = true
-                            await onDelete(image.id)
-                            isBusy = false
+                HStack(spacing: 20) {
+                    // Share
+                    if let url = URL(string: image.url) {
+                        ShareLink(item: url) {
+                            Image(systemName: "square.and.arrow.up")
+                                .font(.headline)
+                                .foregroundStyle(.white)
                         }
+                    }
+                    // Download to Photos
+                    Button {
+                        Task { await downloadImage(image) }
                     } label: {
-                        Image(systemName: "trash")
+                        Image(systemName: "arrow.down.to.line")
                             .font(.headline)
                             .foregroundStyle(.white)
                     }
                     .disabled(isBusy)
+                    // Delete (owner only)
+                    if image.uploadedBy == currentUserId {
+                        Button {
+                            Task {
+                                isBusy = true
+                                await onDelete(image.id)
+                                isBusy = false
+                            }
+                        } label: {
+                            Image(systemName: "trash")
+                                .font(.headline)
+                                .foregroundStyle(.white)
+                        }
+                        .disabled(isBusy)
+                    }
                 }
             }
             .padding(16)

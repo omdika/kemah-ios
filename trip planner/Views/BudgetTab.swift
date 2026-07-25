@@ -218,7 +218,7 @@ struct ExpenseRow: View {
     }
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(alignment: .top, spacing: 12) {
             VStack(alignment: .leading, spacing: 3) {
                 Text(item.name).font(.subheadline.weight(.medium)).foregroundStyle(Theme.textPrimary)
                 Text(payerLine).font(.caption).foregroundStyle(Theme.textMuted)
@@ -233,16 +233,18 @@ struct ExpenseRow: View {
                 }
             }
             Spacer()
-            ImageStripButton(
-                images: item.images, size: 32, currentUserId: currentUserId,
-                onUpload: uploadImage, onDelete: deleteImage
-            )
-            VStack(alignment: .trailing, spacing: 8) {
-                Text(Formatters.rp(item.price)).font(.subheadline.weight(.bold)).foregroundStyle(Theme.textPrimary)
-                Button(action: remove) {
-                    Image(systemName: "xmark").font(.caption.weight(.bold)).foregroundStyle(Theme.textSubtle)
+            VStack(alignment: .trailing, spacing: 4) {
+                HStack(spacing: 8) {
+                    Text(Formatters.rp(item.price)).font(.subheadline.weight(.bold)).foregroundStyle(Theme.textPrimary)
+                    Button(action: remove) {
+                        Image(systemName: "xmark").font(.caption.weight(.bold)).foregroundStyle(Theme.textSubtle)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
+                ImageStripButton(
+                    images: item.images, size: 28, currentUserId: currentUserId,
+                    onUpload: uploadImage, onDelete: deleteImage
+                )
             }
         }
         .padding(12)
