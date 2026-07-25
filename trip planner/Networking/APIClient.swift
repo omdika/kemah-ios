@@ -250,6 +250,16 @@ final class APIClient: Sendable {
         try await request(.post, path: "trips/\(tripId)/invite/invite-link")
     }
 
+    /// Unauthenticated — guest mode. See API_CONTRACT.md v1.4.0.
+    func previewInvite(tripId: String, token: String) async throws -> TripPreview {
+        try await request(
+            .get,
+            path: "trips/\(tripId)/invite/preview",
+            query: [URLQueryItem(name: "token", value: token)],
+            authenticated: false
+        )
+    }
+
     func join(tripId: String, token: String) async throws -> JoinResponse {
         try await request(.post, path: "trips/\(tripId)/invite/join", body: JoinRequest(token: token))
     }

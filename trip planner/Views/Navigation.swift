@@ -13,8 +13,10 @@ enum Route: Hashable {
 }
 
 /// A parsed `kemah://join/...` (or future Universal Link) invite, held by
-/// TripStore until sign-in completes or the join call resolves.
-struct PendingInvite: Equatable {
+/// TripStore until sign-in completes or the join call resolves. Identifiable
+/// so ContentView can drive the guest-preview fullScreenCover off it directly.
+struct PendingInvite: Equatable, Identifiable {
+    var id: String { tripId + token }
     let tripId: String
     let token: String
 }

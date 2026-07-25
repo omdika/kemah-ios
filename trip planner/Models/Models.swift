@@ -185,6 +185,25 @@ struct InviteLink: Codable, Hashable {
     var url: String
 }
 
+/// Guest-safe subset of Trip (GET /trips/:id/invite/preview) — no budget/money
+/// data, no personal items, no per-item checklist detail. Reachable with just
+/// a valid invite token, no sign-in required.
+struct TripPreview: Codable, Hashable {
+    var id: String
+    var name: String
+    var location: String
+    var date: String
+    var coverUrl: String?
+    var participants: [ParticipantPreview]
+    var checklistProgress: ChecklistProgress
+}
+
+struct ParticipantPreview: Codable, Hashable, Identifiable {
+    var id: String { name }
+    var name: String
+    var picForLabel: String
+}
+
 // MARK: - Upload
 
 struct UploadResult: Codable, Hashable {

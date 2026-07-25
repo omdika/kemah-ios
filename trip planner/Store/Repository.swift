@@ -32,6 +32,7 @@ protocol KemahRepository: Sendable {
 
     func inviteLink(tripId: String) async throws -> InviteLink
     func joinTrip(tripId: String, token: String) async throws -> String
+    func previewInvite(tripId: String, token: String) async throws -> TripPreview
 
     func splitBill(tripId: String) async throws -> SplitBillResponse
 }
@@ -85,6 +86,10 @@ final class APIRepository: KemahRepository {
 
     func joinTrip(tripId: String, token: String) async throws -> String {
         try await client.join(tripId: tripId, token: token).tripId
+    }
+
+    func previewInvite(tripId: String, token: String) async throws -> TripPreview {
+        try await client.previewInvite(tripId: tripId, token: token)
     }
 
     func splitBill(tripId: String) async throws -> SplitBillResponse {

@@ -36,6 +36,9 @@ struct ContentView: View {
         .tint(store.accent.color)
         .environmentObject(store)
         .toast($store.toastMessage)
+        .fullScreenCover(item: $store.pendingInvite) { _ in
+            TripPreviewView().environmentObject(store)
+        }
         .task {
             await store.restoreSession()
         }
@@ -46,8 +49,15 @@ struct ContentView: View {
         }
         .onChange(of: store.justJoinedTripId) { tripId in
             guard let tripId else { return }
-            path.append(.trip(tripId))
             store.justJoinedTripId = nil
+            // Match HomeView's own trip-tap pattern: fetch the detail before
+            // pushing, otherwise TripDetailView pushes with a stale/nil
+            // activeTrip and sits on its loading spinner forever — nothing
+            // else ever populates it.
+            Task {
+                await store.openTrip(id: tripId)
+                path.append(.trip(tripId))
+            }
         }
     }
 }

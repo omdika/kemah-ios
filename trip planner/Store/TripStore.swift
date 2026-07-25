@@ -44,6 +44,12 @@ final class TripStore: ObservableObject {
     @Published var invitePreview: TripPreview?
     @Published private(set) var isLoadingInvitePreview = false
     @Published var justJoinedTripId: String?
+    /// Separate from `errorMessage` on purpose: TripPreviewView is presented
+    /// as a fullScreenCover *over* LoginView, so both stay live in the
+    /// hierarchy at once — two `.alert()`s bound to the same property could
+    /// both try to present simultaneously and crash
+    /// ("view controller not containing an alert controller").
+    @Published var inviteErrorMessage: String?
 
     private var toastTask: Task<Void, Never>?
 
@@ -129,8 +135,20 @@ final class TripStore: ObservableObject {
         }
     }
 
+    /// Plain LoginView entry point — errors surface via `errorMessage`.
     func signInWithGoogle() async {
-        errorMessage = nil
+        await performGoogleSignIn { self.errorMessage = $0 }
+    }
+
+    /// TripPreviewView entry point — same sign-in, but errors go to
+    /// `inviteErrorMessage` instead (see its doc comment for why this is a
+    /// separate property rather than reusing `errorMessage`).
+    func signInWithGoogleForInvite() async {
+        await performGoogleSignIn { self.inviteErrorMessage = $0 }
+    }
+
+    private func performGoogleSignIn(reportError: @escaping (String?) -> Void) async {
+        reportError(nil)
         do {
             let session = try await GoogleAuth.signIn()
             KeychainSessionStore.save(session)
@@ -140,7 +158,7 @@ final class TripStore: ObservableObject {
             await loadTrips()
             await consumePendingInviteIfAny()
         } catch {
-            errorMessage = error.localizedDescription
+            reportError(error.localizedDescription)
         }
     }
 
@@ -212,7 +230,7 @@ final class TripStore: ObservableObject {
             invitePreview = try await repository.previewInvite(tripId: invite.tripId, token: invite.token)
         } catch {
             // Bad/expired token, trip gone, etc. — nothing sensible to preview.
-            errorMessage = error.localizedDescription
+            inviteErrorMessage = error.localizedDescription
             pendingInvite = nil
         }
     }
@@ -245,7 +263,7 @@ final class TripStore: ObservableObject {
             justJoinedTripId = tripId
             showToast("Berhasil gabung ke trip")
         } catch {
-            errorMessage = error.localizedDescription
+            inviteErrorMessage = error.localizedDescription
         }
     }
 

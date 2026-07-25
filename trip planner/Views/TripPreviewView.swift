@@ -42,13 +42,13 @@ struct TripPreviewView: View {
         .alert(
             "Gagal memuat undangan",
             isPresented: Binding(
-                get: { store.errorMessage != nil },
-                set: { if !$0 { store.errorMessage = nil } }
+                get: { store.inviteErrorMessage != nil },
+                set: { if !$0 { store.inviteErrorMessage = nil } }
             )
         ) {
             Button("OK", role: .cancel) { dismiss() }
         } message: {
-            Text(store.errorMessage ?? "")
+            Text(store.inviteErrorMessage ?? "")
         }
     }
 
@@ -145,7 +145,7 @@ struct TripPreviewView: View {
                 }
             } else {
                 Button {
-                    runProcessing { await store.signInWithGoogle() }
+                    runProcessing { await store.signInWithGoogleForInvite() }
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: "g.circle.fill")

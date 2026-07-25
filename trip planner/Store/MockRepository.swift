@@ -175,6 +175,20 @@ actor MockRepository: KemahRepository {
         tripId
     }
 
+    func previewInvite(tripId: String, token: String) async throws -> TripPreview {
+        guard let trip = store.first(where: { $0.id == tripId }) else {
+            throw APIError.http(status: 404, body: "Trip not found")
+        }
+        let items = visibleItems(trip.items)
+        let checked = items.filter(\.checked).count
+        return TripPreview(
+            id: trip.id, name: trip.name, location: trip.location, date: trip.date,
+            coverUrl: trip.coverUrl,
+            participants: trip.participants.map { ParticipantPreview(name: $0.name, picForLabel: $0.picForLabel) },
+            checklistProgress: ChecklistProgress(checked: checked, total: items.count)
+        )
+    }
+
     // MARK: Split Bill
 
     func splitBill(tripId: String) async throws -> SplitBillResponse {
