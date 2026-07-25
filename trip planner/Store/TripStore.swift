@@ -36,9 +36,13 @@ final class TripStore: ObservableObject {
     @Published var toastMessage: String?
     @Published var errorMessage: String?
 
-    // Invite deep link: set while an invite is waiting on login, and again
-    // right after a join succeeds so ContentView can push navigation to it.
+    // Invite deep link: set as soon as a link is opened (regardless of auth
+    // state) so ContentView can present the read-only guest preview; cleared
+    // once the join succeeds. `justJoinedTripId` fires once more right after,
+    // so ContentView can push navigation to the newly-joined trip.
     @Published var pendingInvite: PendingInvite?
+    @Published var invitePreview: TripPreview?
+    @Published private(set) var isLoadingInvitePreview = false
     @Published var justJoinedTripId: String?
 
     private var toastTask: Task<Void, Never>?
@@ -191,26 +195,52 @@ final class TripStore: ObservableObject {
         return PendingInvite(tripId: tripId, token: token)
     }
 
-    /// Call from `.onOpenURL`. If already logged in, joins immediately;
-    /// otherwise stashes it until sign-in completes.
+    /// Call from `.onOpenURL`. Always shows the read-only guest preview first,
+    /// regardless of auth state — joining only happens when the user
+    /// explicitly taps the preview's CTA (see `joinPendingInvite`).
     func handleIncomingURL(_ url: URL) {
         guard let invite = Self.parseInviteURL(url) else { return }
-        if isAuthenticated {
-            Task { await join(invite) }
-        } else {
-            pendingInvite = invite
+        pendingInvite = invite
+        Task { await loadInvitePreview() }
+    }
+
+    func loadInvitePreview() async {
+        guard let invite = pendingInvite else { return }
+        isLoadingInvitePreview = true
+        defer { isLoadingInvitePreview = false }
+        do {
+            invitePreview = try await repository.previewInvite(tripId: invite.tripId, token: invite.token)
+        } catch {
+            // Bad/expired token, trip gone, etc. — nothing sensible to preview.
+            errorMessage = error.localizedDescription
+            pendingInvite = nil
         }
+    }
+
+    /// Tapped from the preview sheet by an already-authenticated user (no
+    /// Google round-trip needed — see LoginView/TripPreviewView for the
+    /// signed-out path, which joins via `consumePendingInviteIfAny` instead).
+    func joinPendingInvite() async {
+        guard let invite = pendingInvite else { return }
+        await join(invite)
     }
 
     private func consumePendingInviteIfAny() async {
         guard let invite = pendingInvite else { return }
-        pendingInvite = nil
         await join(invite)
     }
 
+    private var isJoiningInvite = false
+
     private func join(_ invite: PendingInvite) async {
+        guard !isJoiningInvite else { return }
+        isJoiningInvite = true
+        defer { isJoiningInvite = false }
+
         do {
             let tripId = try await repository.joinTrip(tripId: invite.tripId, token: invite.token)
+            pendingInvite = nil
+            invitePreview = nil
             await loadTrips()
             justJoinedTripId = tripId
             showToast("Berhasil gabung ke trip")
