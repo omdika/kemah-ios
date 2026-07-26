@@ -199,8 +199,6 @@ actor MockRepository: KemahRepository {
         let trip = try await self.trip(id: tripId)
         let result = SplitBillCalculator.compute(participants: trip.participants, budgetItems: trip.budgetItems)
         return SplitBillResponse(
-            equalShareLabel: result.equalShareLabel,
-            participantCount: result.participantCount,
             perPerson: result.perPerson.map { row in
                 SplitBillPerPerson(
                     name: row.name,

@@ -34,10 +34,13 @@ struct InitialsAvatar: View {
 
 /// Overlapping avatar stack. Shows up to `maxShown` avatars; if more exist,
 /// appends a "···" pill so the width stays bounded regardless of participant count.
+/// Tap (or hover on pointer devices) to reveal the full participant list.
 struct AvatarStack: View {
     let names: [String]
     var size: CGFloat = 30
     var maxShown: Int = 3
+
+    @State private var showNames = false
 
     var body: some View {
         let shown = Array(names.prefix(maxShown))
@@ -61,6 +64,43 @@ struct AvatarStack: View {
                     .overlay(Circle().stroke(Theme.surface, lineWidth: 2))
             }
         }
+        .onTapGesture { showNames = true }
+        // pointer devices (iPadOS + trackpad, Mac Catalyst)
+        .help(names.joined(separator: "\n"))
+        .popover(isPresented: $showNames) {
+            participantTooltip
+                .presentationDetents([.height(CGFloat(min(names.count, 8) * 48 + 48))])
+                .presentationDragIndicator(.visible)
+        }
+    }
+
+    private var participantTooltip: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Peserta (\(names.count))")
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(Theme.textMuted)
+                .padding(.horizontal, 16)
+                .padding(.top, 16)
+                .padding(.bottom, 8)
+
+            ForEach(Array(names.enumerated()), id: \.offset) { index, name in
+                HStack(spacing: 10) {
+                    InitialsAvatar(name: name, colorIndex: index, size: 28)
+                    Text(name)
+                        .font(.subheadline)
+                        .foregroundStyle(Theme.textPrimary)
+                    Spacer()
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+
+                if index < names.count - 1 {
+                    Divider().padding(.leading, 54)
+                }
+            }
+        }
+        .frame(minWidth: 220)
+        .background(Theme.background)
     }
 }
 
@@ -170,7 +210,7 @@ struct SearchableParticipantField: View {
 
     private var matches: [String] {
         let q = text.trimmingCharacters(in: .whitespaces).lowercased()
-        guard !q.isEmpty else { return [] }
+        if q.isEmpty { return participants }
         return participants.filter { $0.lowercased().contains(q) }
     }
 

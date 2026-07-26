@@ -195,8 +195,6 @@ struct BudgetItem: Codable, Identifiable, Hashable {
 // MARK: - Split Bill (server response shape — GET /trips/:id/split-bill)
 
 struct SplitBillResponse: Codable, Hashable {
-    var equalShareLabel: String
-    var participantCount: Int
     var perPerson: [SplitBillPerPerson]
     var transfers: [SplitBillTransfer]
 }

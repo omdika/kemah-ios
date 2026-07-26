@@ -42,11 +42,12 @@ struct TripDetailView: View {
                         VStack(spacing: 0) {
                             header(trip)
                             VStack(spacing: 16) {
-                                OfflineIndicatorRow(isOffline: $store.isOffline)
                                 segmented
                                 tabContent(trip)
                             }
-                            .padding(20)
+                            .padding(.horizontal, 20)
+                            .padding(.top, 12)
+                            .padding(.bottom, 20)
                         }
                     }
                     .ignoresSafeArea(edges: .top)
@@ -60,7 +61,6 @@ struct TripDetailView: View {
                     }
 
                     backButton
-                    coverEditButton
                 }
             } else {
                 ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -100,7 +100,7 @@ struct TripDetailView: View {
     // MARK: Header
 
     private func header(_ trip: Trip) -> some View {
-        ZStack(alignment: .bottomLeading) {
+        ZStack {
             CoverImage(url: trip.coverUrl, seed: trip.id)
                 .frame(height: 230)
                 .clipped()
@@ -108,67 +108,87 @@ struct TripDetailView: View {
                     LinearGradient(colors: [.clear, .black.opacity(0.65)], startPoint: .center, endPoint: .bottom)
                 )
 
-            VStack(alignment: .leading, spacing: 10) {
-                HStack(spacing: 8) {
+            // VStack fills the full 230pt header: top row pinned at top,
+            // bottom content pinned at bottom via Spacer.
+            VStack(spacing: 0) {
+                // Top row — clear Dynamic Island (safe-area ≤ 59pt on all iPhones).
+                HStack {
+                    // Invisible spacer mirrors the back button (leading, ~50pt)
+                    // so the avatar stack appears centred between the two buttons.
+                    Color.clear.frame(width: 50)
                     Spacer()
                     AvatarStack(names: trip.participants.map(\.name))
+                    Spacer()
+                    HStack(spacing: 6) {
+                        PhotosPicker(selection: $coverPickerItem, matching: .images) {
+                            ZStack {
+                                Circle().fill(.black.opacity(0.35))
+                                if isUploadingCover {
+                                    ProgressView().tint(.white).scaleEffect(0.7)
+                                } else {
+                                    Image(systemName: "camera.fill")
+                                        .font(.footnote)
+                                        .foregroundStyle(.white)
+                                }
+                            }
+                            .frame(width: 34, height: 34)
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(isUploadingCover)
+
+                        Button { showEditTrip = true } label: {
+                            ZStack {
+                                Circle().fill(.black.opacity(0.35))
+                                Image(systemName: "pencil")
+                                    .font(.footnote.weight(.semibold))
+                                    .foregroundStyle(.white)
+                            }
+                            .frame(width: 34, height: 34)
+                        }
+                        .buttonStyle(.plain)
+                    }
                 }
-                HStack(spacing: 8) {
+                .padding(.horizontal, 16)
+                .padding(.top, 60)
+
+                Spacer()
+
+                // Bottom content: name + location + pills
+                VStack(alignment: .leading, spacing: 8) {
                     Text(trip.name)
                         .font(.rounded(26, weight: .bold))
                         .foregroundStyle(.white)
-                    Button { showEditTrip = true } label: {
-                        Image(systemName: "pencil.circle.fill")
-                            .font(.title3)
-                            .foregroundStyle(.white.opacity(0.85))
-                    }
-                    .buttonStyle(.plain)
-                }
-                Text("\(trip.location) · \(Formatters.dateLabel(trip.date))")
-                    .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.9))
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.85)
+                    Text("\(trip.location) · \(Formatters.dateLabel(trip.date))")
+                        .font(.subheadline)
+                        .foregroundStyle(.white.opacity(0.9))
 
-                HStack(spacing: 8) {
-                    pill("Undang", "person.badge.plus") { showInvite = true }
-                    if let map = trip.mapLink, !map.isEmpty, let url = URL(string: map) {
-                        pill("Lihat Peta", "mappin.and.ellipse") { openURL(url) }
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            pill("Undang", "person.badge.plus") { showInvite = true }
+                            if let map = trip.mapLink, !map.isEmpty, let url = URL(string: map) {
+                                pill("Lokasi", "mappin.and.ellipse") { openURL(url) }
+                            }
+                            if let wa = Formatters.waLink(for: trip.phone) {
+                                pill("Chat", icon: {
+                                    Image("ic_whatsapp")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 12, height: 12)
+                                }) { openURL(wa) }
+                            }
+                            if let docs = trip.docsLink, !docs.isEmpty, let url = URL(string: docs) {
+                                pill("Link", "link") { openURL(url) }
+                            }
+                        }
                     }
-                    if let docs = trip.docsLink, !docs.isEmpty, let url = URL(string: docs) {
-                        pill("Dokumentasi", "doc.text.fill") { openURL(url) }
-                    }
-                    if let wa = Formatters.waLink(for: trip.phone) {
-                        pill("Chat Admin", "message.fill") { openURL(wa) }
-                    }
+                    .padding(.top, 2)
                 }
-                .padding(.top, 2)
-
-                if let uploader = trip.coverUploadedByName {
-                    Text("Foto cover oleh \(uploader)")
-                        .font(.caption2)
-                        .foregroundStyle(.white.opacity(0.75))
-                }
+                .padding(16)
             }
-            .padding(16)
+            .frame(height: 230)
         }
-    }
-
-    private var coverEditButton: some View {
-        PhotosPicker(selection: $coverPickerItem, matching: .images) {
-            ZStack {
-                Circle().fill(.black.opacity(0.35))
-                if isUploadingCover {
-                    ProgressView().tint(.white)
-                } else {
-                    Image(systemName: "camera.fill").font(.footnote).foregroundStyle(.white)
-                }
-            }
-            .frame(width: 34, height: 34)
-        }
-        .buttonStyle(.plain)
-        .disabled(isUploadingCover)
-        .frame(maxWidth: .infinity, alignment: .trailing)
-        .padding(.top, 8)
-        .padding(.trailing, 16)
     }
 
     private var backButton: some View {
@@ -186,8 +206,12 @@ struct TripDetailView: View {
     }
 
     private func pill(_ title: String, _ icon: String, action: @escaping () -> Void) -> some View {
+        pill(title, icon: { Image(systemName: icon) }, action: action)
+    }
+
+    private func pill<Icon: View>(_ title: String, @ViewBuilder icon: () -> Icon, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Label(title, systemImage: icon)
+            Label { Text(title) } icon: { icon() }
                 .font(.caption.weight(.semibold))
                 .labelStyle(.titleAndIcon)
                 .padding(.horizontal, 12).padding(.vertical, 7)

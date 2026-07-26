@@ -53,7 +53,6 @@ struct SplitBillView: View {
             if let trip = store.activeTrip, let result = store.activeSettlement {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
-                        banner(result)
                         perPersonSection(result)
                         transfersSection(result)
                         ShareLink(item: shareText(result)) {
@@ -73,32 +72,47 @@ struct SplitBillView: View {
                     await store.loadSettlement(for: trip)
                 }
             } else if let trip = store.activeTrip {
-                ProgressView("Menghitung...")
+                if let errMsg = store.settlementError {
+                    VStack(spacing: 16) {
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.largeTitle)
+                            .foregroundStyle(Theme.textMuted)
+                        Text("Gagal memuat split bill")
+                            .font(.headline)
+                            .foregroundStyle(Theme.textPrimary)
+                        Text(errMsg)
+                            .font(.footnote)
+                            .foregroundStyle(Theme.textMuted)
+                            .multilineTextAlignment(.center)
+                        Button {
+                            Task { await store.loadSettlement(for: trip) }
+                        } label: {
+                            Label("Coba Lagi", systemImage: "arrow.clockwise")
+                                .font(.subheadline.weight(.semibold))
+                                .padding(.horizontal, 20).padding(.vertical, 10)
+                                .background(store.accent.color)
+                                .foregroundStyle(.white)
+                                .clipShape(Capsule())
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(32)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Theme.background)
-                    .task(id: trip.id) {
-                        await store.loadSettlement(for: trip)
-                    }
+                } else {
+                    ProgressView("Memuat dari server...")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(Theme.background)
+                        .task(id: trip.id) {
+                            await store.loadSettlement(for: trip)
+                        }
+                }
             } else {
                 ProgressView()
             }
         }
         .navigationTitle("Split Bill")
         .navigationBarTitleDisplayMode(.inline)
-    }
-
-    // MARK: Banner
-
-    private func banner(_ r: SettlementResult) -> some View {
-        VStack(spacing: 4) {
-            Text("Dibagi \(r.participantCount) orang")
-                .font(.subheadline).foregroundStyle(Theme.textMuted)
-            Text("\(r.equalShareLabel) / orang")
-                .font(.rounded(24, weight: .bold)).foregroundStyle(Theme.textPrimary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(18)
-        .cardStyle()
     }
 
     // MARK: Per person
@@ -324,7 +338,7 @@ struct SplitBillView: View {
     }
 
     private func shareText(_ r: SettlementResult) -> String {
-        var lines = ["Split Bill — \(store.activeTrip?.name ?? "Trip")", "Dibagi \(r.participantCount) orang · \(r.equalShareLabel)/orang", ""]
+        var lines = ["Split Bill — \(store.activeTrip?.name ?? "Trip")", ""]
         for t in r.transfers {
             lines.append("\(t.from) → \(t.to): \(Formatters.rp(t.total))")
         }

@@ -22,8 +22,6 @@ import Foundation
 // MARK: - Output types
 
 struct SettlementResult: Equatable {
-    var participantCount: Int
-    var equalShareLabel: String
     var perPerson: [PerPersonRow]
     var transfers: [TransferRow]
 }
@@ -210,8 +208,6 @@ enum SplitBillCalculator {
         let transfers = order.compactMap { groups[$0] }
 
         return SettlementResult(
-            participantCount: participants.count,
-            equalShareLabel: Formatters.rp(sharedSpent / Double(totalHeadcount)),
             perPerson: perPerson,
             transfers: transfers
         )

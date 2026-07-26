@@ -29,6 +29,7 @@ final class TripStore: ObservableObject {
     @Published private(set) var isLoadingTrips = false
     @Published private(set) var isLoadingDetail = false
     @Published private(set) var isLoadingSettlement = false
+    @Published private(set) var settlementError: String?
 
     // UI-only state
     @Published var isOffline = true
@@ -66,24 +67,19 @@ final class TripStore: ObservableObject {
 
     func loadSettlement(for trip: Trip) async {
         isLoadingSettlement = true
+        settlementError = nil
         defer { isLoadingSettlement = false }
         do {
             let response = try await repository.splitBill(tripId: trip.id)
             activeSettlement = mapSettlement(response, participants: trip.participants)
         } catch {
-            // API unavailable — fall back to client-side computation.
-            activeSettlement = SplitBillCalculator.compute(
-                participants: trip.participants,
-                budgetItems: trip.budgetItems
-            )
+            settlementError = error.localizedDescription
         }
     }
 
     private func mapSettlement(_ response: SplitBillResponse, participants: [Participant]) -> SettlementResult {
         let colorMap = Dictionary(uniqueKeysWithValues: participants.enumerated().map { ($1.name, $0) })
         return SettlementResult(
-            participantCount: response.participantCount,
-            equalShareLabel: response.equalShareLabel,
             perPerson: response.perPerson.map { p in
                 PerPersonRow(
                     name: p.name,

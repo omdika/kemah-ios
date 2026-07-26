@@ -15,6 +15,7 @@ struct HomeView: View {
 
     @State private var showNewTrip = false
     @State private var selectedTab: HomeTab = .trip
+    @State private var isNavigating = false
 
     enum HomeTab { case trip, profil }
 
@@ -31,6 +32,7 @@ struct HomeView: View {
             floatingButton
             tabBar
         }
+        .onAppear { isNavigating = false }
         .sheet(isPresented: $showNewTrip) {
             NewTripSheet()
         }
@@ -48,6 +50,8 @@ struct HomeView: View {
                     section(title: "Akan Datang") {
                         ForEach(store.upcomingTrips) { trip in
                             Button {
+                                guard !isNavigating else { return }
+                                isNavigating = true
                                 Task {
                                     await store.openTrip(id: trip.id)
                                     path.append(.trip(trip.id))
@@ -68,6 +72,8 @@ struct HomeView: View {
                             HistoryTripRow(trip: trip) {
                                 store.showToast("Ringkasan \"\(trip.name)\" dibagikan")
                             } open: {
+                                guard !isNavigating else { return }
+                                isNavigating = true
                                 Task {
                                     await store.openTrip(id: trip.id)
                                     path.append(.trip(trip.id))

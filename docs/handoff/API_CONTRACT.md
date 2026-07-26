@@ -119,12 +119,12 @@ Any subset of `name, price, paidBy, pic, splitMode, isPersonal`. Toggling `isPer
 
 **Thresholds:** balances within ±1000 are "Lunas"; the greedy matcher ignores amounts ≤ 500.
 
+**[Removed fields]** `equalShareLabel` and `participantCount` have been removed from the response. The iOS client no longer reads or displays them — remove them from the backend response.
+
 **Response** — field names match the iOS `SettlementResult` / `PerPersonRow` / `TransferRow` structs exactly for zero-adapter JSON decoding:
 
 ```json
 {
-  "equalShareLabel": "Rp40.000",
-  "participantCount": 4,
   "perPerson": [
     {
       "name": "Dinda",
