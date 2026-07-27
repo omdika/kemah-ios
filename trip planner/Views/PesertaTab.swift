@@ -124,7 +124,7 @@ struct ParticipantRow: View {
             InitialsAvatar(name: participant.name, colorIndex: colorIndex, size: 42)
             VStack(alignment: .leading, spacing: 2) {
                 Text(participant.name).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.textPrimary)
-                Text("\(participant.picForLabel) · \(participant.headcount) orang")
+                Text("\(participant.picForLabel) · \(participant.headcount == 0 ? "tidak ikut" : "\(participant.headcount) orang")")
                     .font(.caption).foregroundStyle(Theme.textMuted)
             }
             Spacer()

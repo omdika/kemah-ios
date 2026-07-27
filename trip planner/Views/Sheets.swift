@@ -173,8 +173,8 @@ struct RoleSheet: View {
 
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Jumlah Orang").font(.footnote.weight(.semibold)).foregroundStyle(Theme.textMuted)
-                        Stepper(value: $headcount, in: 1...20) {
-                            Text("\(headcount) orang").font(.headline)
+                        Stepper(value: $headcount, in: 0...20) {
+                            Text(headcount == 0 ? "tidak ikut" : "\(headcount) orang").font(.headline)
                         }
                     }
 

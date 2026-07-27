@@ -93,7 +93,7 @@ actor MockRepository: KemahRepository {
         let t = try mutate(tripId) { trip in
             guard let i = trip.participants.firstIndex(where: { $0.id == participantId }) else { return }
             if let v = body.picForLabel { trip.participants[i].picForLabel = v }
-            if let v = body.headcount { trip.participants[i].headcount = max(v, 1) }
+            if let v = body.headcount { trip.participants[i].headcount = max(v, 0) }
         }
         guard let p = t.participants.first(where: { $0.id == participantId }) else { throw APIError.invalidResponse }
         return p

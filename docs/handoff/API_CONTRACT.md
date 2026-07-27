@@ -79,6 +79,7 @@ Partial update — any subset of `name, location, date, mapLink, phone, docsLink
 ```json
 { "picForLabel": "PIC Tiket & Logistik", "headcount": 1 }
 ```
+`headcount` minimum: **0** (sejak v1.8.0, sebelumnya 1). Nilai 0 berarti peserta tidak ikut dalam hitungan Per-Orang. Nilai negatif ditolak (`422`).
 
 ### `DELETE /:participantId` — Hapus peserta (owner only)
 **[v1.7.0]** Hard-deletes a participant from the trip.

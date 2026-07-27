@@ -5,6 +5,47 @@ Versioning is semantic-ish: MAJOR for breaking model/flow changes, MINOR for new
 
 Each released version is archived verbatim under [`versions/`](./versions/); the files at the handoff root are always the latest.
 
+## [1.8.0] — 2026-07-27
+
+### Changed
+
+**`headcount` minimum turun dari 1 ke 0**
+Peserta dengan `headcount: 0` dianggap ikut trip secara administratif tapi tidak menggunakan shared resources (contoh: driver, bayi, koordinator non-aktif). Mereka tidak mendapat porsi dari item Per-Orang, tapi tetap dihitung dalam flat-split Per-PIC (karena Per-PIC dibagi per peserta, bukan per headcount).
+
+#### Frontend (iOS Swift)
+- `SplitBill/SplitBillCalculator.swift`: hapus `max(p.headcount, 1)` di baris perhitungan share Per-Orang — gunakan `p.headcount` langsung. Tetap pertahankan `max(totalHeadcount, 1)` untuk guard division-by-zero.
+- `Store/MockRepository.swift`: `updateParticipant` — ubah `max(v, 1)` → `max(v, 0)` agar nilai 0 bisa disimpan (tapi negatif tetap ditolak).
+- `Views/Sheets.swift`: ubah Stepper dari `in: 1...20` → `in: 0...20`.
+- `Views/PesertaTab.swift`: tampilkan `"tidak ikut"` (bukan `"0 orang"`) ketika `headcount == 0`.
+
+#### Backend (FastAPI)
+- `PATCH /trips/:tripId/participants/:participantId` — ubah validasi Pydantic field `headcount` dari `ge=1` ke `ge=0`.
+- `GET /trips/:tripId/split-bill` — pastikan server-side split-bill calculator tidak clamp headcount ke minimum 1. Peserta dengan `headcount: 0` harus mendapat `share: 0` untuk semua item Per-Orang. Per-PIC flat-split tetap dibagi oleh jumlah peserta (tidak berubah).
+
+#### Auth rules
+- Semua peserta bisa update headcount diri sendiri.
+- Owner trip bisa update headcount peserta manapun.
+- Tidak ada perubahan aturan auth dari v1.7.0.
+
+#### Test scenarios
+- **Happy path**: peserta dengan `headcount: 0` mendapat `share: 0` untuk semua item Per-Orang di split-bill.
+- **Per-PIC tidak berubah**: peserta dengan `headcount: 0` tetap menanggung 1/N dari item Per-PIC pooled.
+- **Edge case — semua headcount 0**: totalHeadcount = 0 → semua share Per-Orang = 0, tidak crash (guard `max(totalHeadcount, 1)`).
+- **Stepper**: UI memungkinkan memilih 0 dari edit-peserta sheet.
+- **Display**: label di tab Peserta menampilkan "tidak ikut" untuk headcount 0, bukan "0 orang".
+- **Error path**: nilai negatif ditolak → mock clamp ke 0, backend return 422.
+
+#### Migration checklist (backend)
+```sql
+-- Tidak ada perubahan schema database.
+-- Hanya perlu update validasi Pydantic dan logika split-bill di application layer.
+```
+- [ ] Ubah validasi `headcount: int = Field(ge=1)` → `headcount: int = Field(ge=0)` di schema Participant
+- [ ] Pastikan fungsi `compute_split_bill()` tidak clamp headcount ke min 1
+- [ ] Re-deploy Cloud Run setelah perubahan
+
+---
+
 ## [1.7.0] — 2026-07-27
 
 ### Added

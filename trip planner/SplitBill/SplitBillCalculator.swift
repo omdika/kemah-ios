@@ -118,12 +118,14 @@ enum SplitBillCalculator {
 
         let sharedSpent = sharedItems.reduce(0) { $0 + $1.price }
         let picSpent = picItems.reduce(0) { $0 + $1.price }
-        let totalHeadcount = max(participants.reduce(0) { $0 + max($1.headcount, 1) }, 1)
+        // headcount 0 is valid (v1.8.0): participant excluded from Per-Orang share.
+        // Guard against division-by-zero when all participants have headcount 0.
+        let totalHeadcount = max(participants.reduce(0) { $0 + $1.headcount }, 1)
         let participantCount = max(participants.count, 1)
         let picSharePerPerson = picSpent / Double(participantCount)
 
         let balances: [BalanceRecord] = participants.enumerated().map { index, p in
-            let headcount = max(p.headcount, 1)
+            let headcount = p.headcount
 
             // Per-item pool breakdown for this person.
             // Per-PIC pooled: flat share = price / participantCount (headcount ignored).
