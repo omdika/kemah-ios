@@ -203,3 +203,106 @@ struct V170IsOwnerTests {
         #expect(store.isOwner == true)
     }
 }
+
+// MARK: - v1.8.0 Tests: headcount 0
+
+struct V180Tests {
+
+    // MARK: Helpers
+
+    private func participant(_ name: String, headcount: Int) -> Participant {
+        Participant(id: "p_\(name.lowercased())", name: name, picForLabel: "PIC", headcount: headcount)
+    }
+
+    private func orangItem(_ id: String, price: Double, paidBy: String) -> BudgetItem {
+        BudgetItem(id: id, name: id, price: price, paidBy: paidBy, pic: nil, splitMode: .orang)
+    }
+
+    private func picPooledItem(_ id: String, price: Double, paidBy: String) -> BudgetItem {
+        BudgetItem(id: id, name: id, price: price, paidBy: paidBy, pic: nil, splitMode: .pic)
+    }
+
+    // MARK: SplitBillCalculator
+
+    @Test("headcount 0 participant gets zero share for Per-Orang items")
+    func zeroHeadcountExcludedFromOrang() {
+        let participants = [participant("A", headcount: 2), participant("B", headcount: 0)]
+        let items = [orangItem("x", price: 200, paidBy: "A")]
+        let result = SplitBillCalculator.compute(participants: participants, budgetItems: items)
+
+        let rowA = result.perPerson.first { $0.name == "A" }!
+        let rowB = result.perPerson.first { $0.name == "B" }!
+        #expect(rowA.share == 200)  // A owns all 2/2 headcount
+        #expect(rowB.share == 0)    // B has headcount 0 → no share
+    }
+
+    @Test("headcount 0 participant still gets 1/N for Per-PIC pooled items")
+    func zeroHeadcountIncludedInPicFlat() {
+        let participants = [participant("A", headcount: 2), participant("B", headcount: 0)]
+        let items = [picPooledItem("y", price: 200, paidBy: "A")]
+        let result = SplitBillCalculator.compute(participants: participants, budgetItems: items)
+
+        let rowA = result.perPerson.first { $0.name == "A" }!
+        let rowB = result.perPerson.first { $0.name == "B" }!
+        #expect(rowA.share == 100)  // Per-PIC flat: 200 / 2 = 100
+        #expect(rowB.share == 100)
+    }
+
+    @Test("all participants headcount 0 does not crash — shares are zero")
+    func allZeroHeadcountNoCrash() {
+        let participants = [participant("A", headcount: 0), participant("B", headcount: 0)]
+        let items = [orangItem("z", price: 300, paidBy: "A")]
+        let result = SplitBillCalculator.compute(participants: participants, budgetItems: items)
+
+        // totalHeadcount guard (max(...,1)) prevents division by zero
+        #expect(result.perPerson.allSatisfy { $0.share == 0 })
+    }
+
+    @Test("mixed: headcount 0 excluded from orang but included in pic — correct balance")
+    func mixedItemTypesWithZeroHeadcount() {
+        // A: headcount 2, B: headcount 0
+        // Orang item: 100 (paid by A) → A share 100, B share 0
+        // Pic pooled item: 60 (paid by B) → A share 30, B share 30
+        // A: contribution 100, share 130, balance -30
+        // B: contribution 60, share 30, balance 30
+        let participants = [participant("A", headcount: 2), participant("B", headcount: 0)]
+        let items = [
+            orangItem("o1", price: 100, paidBy: "A"),
+            picPooledItem("p1", price: 60, paidBy: "B"),
+        ]
+        let result = SplitBillCalculator.compute(participants: participants, budgetItems: items)
+
+        let rowA = result.perPerson.first { $0.name == "A" }!
+        let rowB = result.perPerson.first { $0.name == "B" }!
+        #expect(rowA.share == 130)
+        #expect(rowB.share == 30)
+        #expect(rowA.balance == -30)  // A underpaid
+        #expect(rowB.balance == 30)   // B overpaid
+    }
+
+    // MARK: MockRepository: headcount clamp
+
+    @Test("updateParticipant clamps negative headcount to 0")
+    func negativeHeadcountClampedToZero() async throws {
+        let mock = await MockRepository()
+        _ = try await mock.updateParticipant(
+            tripId: "t1", participantId: "p_yuki",
+            UpdateParticipantRequest(picForLabel: nil, headcount: -5)
+        )
+        let trip = try await mock.trip(id: "t1")
+        let yuki = trip.participants.first { $0.id == "p_yuki" }!
+        #expect(yuki.headcount == 0)
+    }
+
+    @Test("updateParticipant stores headcount 0 correctly")
+    func zeroHeadcountStoredCorrectly() async throws {
+        let mock = await MockRepository()
+        _ = try await mock.updateParticipant(
+            tripId: "t1", participantId: "p_yuki",
+            UpdateParticipantRequest(picForLabel: nil, headcount: 0)
+        )
+        let trip = try await mock.trip(id: "t1")
+        let yuki = trip.participants.first { $0.id == "p_yuki" }!
+        #expect(yuki.headcount == 0)
+    }
+}
