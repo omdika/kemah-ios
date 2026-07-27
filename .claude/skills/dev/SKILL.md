@@ -1,53 +1,121 @@
 ---
-description: Implement a feature for the Kemah iOS trip planner end-to-end (model → networking → store → UI)
+description: Implement the latest spec changes from docs/handoff/ — frontend only, backend only, or both
 ---
 
-## Konteks proyek
-- App: Kemah — group camping trip planner, SwiftUI, **iOS 16.0 minimum**
-- Source root: `trip planner/trip planner/`
-- Spec otoritatif: `docs/handoff/API_CONTRACT.md` dan `docs/handoff/README.md`
-  → **Baca ini dulu** sebelum mengubah model, networking, atau split-bill logic
-- Backend: plain REST + `Authorization: Bearer <idToken>` — tidak ada Firebase/Supabase SDK
-- Default: `MockRepository` (offline, in-memory) — app bisa jalan tanpa backend
+## Cara panggil
+- `/dev` — kerjakan frontend (iOS) dan backend sekaligus
+- `/dev frontend` — hanya iOS Swift (model, networking, store, UI)
+- `/dev backend` — hanya panduan perubahan FastAPI (endpoint, schema, migration)
 
-## Aturan iOS 16
-- DILARANG: `@Observable`, `@Bindable`, `@Environment(Type.self)`, `.onChange(of:initial:_:)` (2-param)
+## Langkah pertama: baca latest changes
+
+Selalu mulai dengan membaca **CHANGELOG.md** untuk menemukan versi terbaru:
+```
+docs/handoff/CHANGELOG.md
+```
+Cari entry `## [X.Y.Z]` paling atas — itu adalah spec yang harus diimplementasikan.
+Lalu baca detail di:
+- `docs/handoff/API_CONTRACT.md` — endpoint dan request/response shape
+- `docs/handoff/README.md` — logika bisnis dan aturan
+
+Jangan implementasi fitur yang tidak ada di latest changelog entry.
+
+---
+
+## Mode: FRONTEND (iOS Swift)
+
+Berlaku untuk `/dev` dan `/dev frontend`.
+
+### Aturan iOS 16
+- DILARANG: `@Observable`, `@Bindable`, `@Environment(Type.self)`, `.onChange` 2-parameter
 - GUNAKAN: `ObservableObject` + `@Published` + `@EnvironmentObject`
-- Combine hanya untuk `TripStore` (sudah ada) — jangan tambahkan di view baru
-- Swift async/await untuk semua networking dan store methods
+- Swift async/await untuk networking — tidak ada Combine di view baru
 
-## Arsitektur (ikuti urutan ini)
+### Urutan implementasi (ikuti layer ini)
 ```
-Models/Models.swift          ← struct, Codable, field = API_CONTRACT.md
-Networking/APIClient.swift   ← async func + Authorization header
-Networking/Requests.swift    ← create/update payload structs
-Store/Repository.swift       ← tambah ke protocol KemahRepository
-Store/APIRepository.swift    ← implementasi real (panggil APIClient)
-Store/MockRepository.swift   ← implementasi mock (in-memory, seeded)
-Store/TripStore.swift        ← @Published state + async action methods
-Views/                       ← SwiftUI views, @EnvironmentObject store
+1. Models/Models.swift          ← struct baru / field baru, Codable
+2. Networking/Requests.swift    ← create/update payload structs
+3. Networking/APIClient.swift   ← async func baru + Authorization header
+4. Store/Repository.swift       ← tambah ke protocol KemahRepository
+5. Store/MockRepository.swift   ← implementasi mock (in-memory, seeded)
+6. Store/TripStore.swift        ← @Published state + async action methods
+7. Views/                       ← SwiftUI views
 ```
 
-## Aturan kode
-- File baru: **wajib gunakan `XcodeWrite`** bukan `Write` — agar masuk Xcode target
-- Copy/UI: Bahasa Indonesia ("Tambah", "Simpan", "Batalkan", "Berhasil")
-- Tidak ada `force unwrap` (`!`) kecuali sudah ada di kode lama
+### Aturan file baru
+- **Wajib gunakan `XcodeWrite`** bukan `Write` — agar file masuk Xcode target dan ikut build
+
+### Aturan kode
+- Copy/UI: Bahasa Indonesia
+- Tidak ada force unwrap (`!`) baru
 - Tidak ada comment yang menjelaskan WHAT — hanya WHY jika non-obvious
-- Tidak ada fitur tambahan di luar scope yang diminta
+- Tidak ada fitur tambahan di luar scope latest changelog
 
-## Split-bill (handle dengan sangat hati-hati)
-Ubah HANYA jika spec berubah. Selalu cek `README.md` "Split Bill Logic" dan
-`reference/Kemah Travel App.dc.html` sebagai ground truth. Test setiap perubahan.
+### Split-bill (sangat kritis)
+Ubah HANYA jika changelog menyebutkan perubahan split-bill.
+Ground truth: `README.md` bagian "Split Bill Logic".
 
-## Langkah wajib setiap implementasi
-1. Baca spec: `docs/handoff/API_CONTRACT.md` bagian yang relevan
-2. Implementasi layer demi layer (Model → Network → Store → UI)
-3. Setelah setiap file: jalankan `XcodeRefreshCodeIssuesInFile`
-4. Setelah semua selesai: jalankan `BuildProject`
-5. Jika build gagal: fix semua error, build ulang sampai sukses
-6. Report: daftar file yang diubah + ringkasan perubahan
+### Setiap file selesai
+Jalankan `XcodeRefreshCodeIssuesInFile` → fix error → lanjut file berikutnya.
+Di akhir semua file: jalankan `BuildProject` → harus sukses sebelum report selesai.
 
-## Jangan lupa
-- `MockRepository` harus selalu punya data mock yang masuk akal untuk fitur baru
-- Setiap endpoint baru di `APIClient` harus ada pasangannya di `KemahRepository` protocol
-- State loading/error harus ditangani di `TripStore` (`@Published var isLoading`, `settlementError`, dll)
+---
+
+## Mode: BACKEND (FastAPI)
+
+Berlaku untuk `/dev` dan `/dev backend`.
+
+Karena backend (FastAPI di Google Cloud) tidak ada di repo ini, output mode backend adalah
+**instruksi tertulis** yang bisa langsung dikerjakan developer backend atau Claude di repo backend.
+
+Format output:
+
+### 1. Database migration
+```sql
+-- Tulis ALTER TABLE / CREATE TABLE yang diperlukan
+ALTER TABLE trips ADD COLUMN docs_link TEXT DEFAULT NULL;
+```
+
+### 2. Pydantic schema
+```python
+# Request body baru / perubahan field
+class TripCreate(BaseModel):
+    ...
+    docs_link: str | None = None
+```
+
+### 3. Endpoint baru atau perubahan
+```python
+# Method, path, logic
+@router.post("/trips")
+async def create_trip(...):
+    ...
+```
+
+### 4. Rules bisnis
+- Filter/validasi apa yang harus diterapkan
+- Siapa yang boleh akses (auth check)
+- Error response yang diharapkan
+
+### 5. Checklist deploy
+- [ ] Migration dijalankan sebelum deploy
+- [ ] Environment variable baru (jika ada)
+- [ ] `gcloud run deploy` setelah test lokal
+
+---
+
+## Report akhir
+
+Setelah selesai, tulis ringkasan:
+```
+Versi diimplementasikan: [X.Y.Z]
+Mode: frontend / backend / keduanya
+
+Frontend:
+- File diubah: ...
+- Build: sukses
+
+Backend:
+- Migration: ...
+- Endpoint baru/berubah: ...
+```
