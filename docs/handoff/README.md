@@ -150,12 +150,19 @@ Trip {
   status: 'upcoming' | 'selesai',
   budgetTarget: number,
   budgetMode: 'manual' | 'auto',
-  participants: [{ name, picForLabel (role), headcount }],
+  ownerId: string,                                                            // userId pembuat trip (v1.7.0)
+  participants: [{ id, userId?, name, picForLabel (role), headcount }],       // userId added (v1.7.0)
   items: [{ name, qty, pic, note, checked, isPersonal, owner? }],           // owner set for personal items (v1.1.0)
   budgetItems: [{ name, price, pic, paidBy, splitMode, isPersonal, owner? }] // isPersonal + owner added (v1.1.0)
 }
 ```
 - **`items[].owner` / `budgetItems[].owner` (v1.1.0):** set (server-side, from the auth token) when `isPersonal: true`; `null` for shared/group entries. The backend must return personal entries **only** to their owner. The client must never render another user's personal entries.
+- **`Trip.ownerId` (v1.7.0):** userId dari pembuat trip, di-set saat `POST /trips`, tidak bisa diubah. Dipakai untuk enforce: hanya owner yang bisa hapus peserta lain, dan owner tidak bisa keluar dari trip (harus hapus trip).
+- **`Participant.userId` (v1.7.0):** `null` untuk peserta yang ditambahkan manual by name. Diisi saat peserta join via invite link yang terauthentikasi. iOS client bandingkan `userId` peserta dengan `store.user?.id` untuk tahu siapa diri sendiri di list.
+
+**[v1.7.0] Aturan manajemen peserta:**
+- **Hapus peserta** (`DELETE /participants/:id`): hanya owner trip. Tidak bisa hapus diri sendiri via endpoint ini.
+- **Keluar dari trip** (`DELETE /participants/me`): semua peserta kecuali owner. iOS tampilkan tombol "Keluar dari Trip" di tab Peserta hanya untuk non-owner. Owner tidak tampilkan tombol ini.
 - App-level state: current screen/tab, active trip id, all sheet open/closed + form-field state, per-transfer paid/expanded UI state (ephemeral, not persisted), offline/online flag.
 
 ## Assets

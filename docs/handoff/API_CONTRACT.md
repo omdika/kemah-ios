@@ -27,7 +27,7 @@ List trips the signed-in user participates in. `checklistProgress` counts only i
     "mapLink": "https://maps.google.com/...",
     "phone": "081234567890", "docsLink": "https://drive.google.com/...",
     "status": "upcoming", "budgetTarget": 1200000, "budgetMode": "manual",
-    "participantCount": 5, "checklistProgress": { "checked": 8, "total": 15 } } ] }
+    "ownerId": "u_123", "participantCount": 5, "checklistProgress": { "checked": 8, "total": 15 } } ] }
 ```
 **[v1.5.0]** `coverUploadedByName`/`coverUploadedAt` are `null` until someone uploads a cover via `POST /trips/:id/cover` (see Photo Upload section).
 
@@ -47,7 +47,8 @@ Full trip detail including nested lists. **`items` and `budgetItems` are filtere
   "id": "t1", "name": "...", "location": "...", "date": "2026-08-01", "coverUrl": "...",
   "mapLink": "...", "phone": "...", "docsLink": "https://drive.google.com/...", "status": "upcoming",
   "budgetTarget": 1200000, "budgetMode": "manual",
-  "participants": [ { "id": "p1", "name": "Dinda", "picForLabel": "Koordinator", "headcount": 1 } ],
+  "ownerId": "u_123",
+  "participants": [ { "id": "p1", "userId": "u_123", "name": "Dinda", "picForLabel": "Koordinator", "headcount": 1 } ],
   "items": [ { "id": "i1", "name": "Tenda dome 4 orang", "qty": 1, "pic": "Rangga",
       "note": "cek patok & pasak lengkap", "checked": true, "isPersonal": false, "owner": null,
       "images": [ { "id": "img1", "url": "https://.../tenda.jpg", "uploadedBy": "u_123",
@@ -70,15 +71,35 @@ Partial update — any subset of `name, location, date, mapLink, phone, docsLink
 ### `POST /`
 ```json
 // request: { "name": "Ani" }
-// response: { "id": "p5", "name": "Ani", "picForLabel": "Peserta", "headcount": 1 }
+// response: { "id": "p5", "userId": null, "name": "Ani", "picForLabel": "Peserta", "headcount": 1 }
 ```
+`userId` is `null` for participants added manually by name (not yet linked to an account).
 
 ### `PATCH /:participantId`
 ```json
 { "picForLabel": "PIC Tiket & Logistik", "headcount": 1 }
 ```
 
-### `DELETE /:participantId`
+### `DELETE /:participantId` — Hapus peserta (owner only)
+**[v1.7.0]** Hard-deletes a participant from the trip.
+
+**Auth rules:**
+- Caller must be the trip owner (`ownerId == caller's userId`) → `403` otherwise
+- Cannot delete the owner's own participant record via this endpoint → `400 "Cannot remove trip owner"`
+- If the participant has personal items (`isPersonal: true`), those are also hard-deleted
+
+**Response:** `204 No Content`
+
+### `DELETE /me` — Keluar dari trip (semua peserta kecuali owner)
+**[v1.7.0]** Lets the authenticated caller remove themselves from the trip (leave).
+
+**Auth rules:**
+- Any participant except the trip owner may call this → owner gets `403 "Trip owner cannot leave — delete the trip instead"`
+- Caller is identified by their auth token's `userId` matched against `participants[].userId`
+- If caller has no linked participant (`userId` not found in participants) → `404`
+- All personal items (`isPersonal: true`, `owner == caller`) are also hard-deleted
+
+**Response:** `204 No Content`
 
 ## Checklist Items (`/trips/:tripId/items`)
 

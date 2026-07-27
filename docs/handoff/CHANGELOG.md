@@ -5,6 +5,45 @@ Versioning is semantic-ish: MAJOR for breaking model/flow changes, MINOR for new
 
 Each released version is archived verbatim under [`versions/`](./versions/); the files at the handoff root are always the latest.
 
+## [1.7.0] — 2026-07-27
+
+### Added
+
+**`ownerId` — identitas pemilik trip**
+- `Trip` dan `TripSummary` mendapatkan field baru `ownerId: string` — userId dari pembuat trip.
+- Nilai di-set otomatis saat `POST /trips` dari auth token caller, tidak bisa diubah via PATCH.
+- **Database:** `ALTER TABLE trips ADD COLUMN owner_id TEXT NOT NULL DEFAULT '';` lalu isi dengan `created_by` atau user pertama yang join.
+
+**`userId` — link peserta ke akun**
+- `Participant` mendapatkan field baru `userId: string | null` — `null` untuk peserta yang ditambahkan manual (belum punya akun terhubung), diisi saat peserta join via invite link.
+- **Database:** `ALTER TABLE participants ADD COLUMN user_id TEXT DEFAULT NULL;`
+
+**Hapus peserta — `DELETE /trips/:tripId/participants/:participantId`**
+- Endpoint sudah ada sejak v1.0.0, sekarang ditegaskan authorization-nya.
+- Hanya pemilik trip (`ownerId == caller userId`) yang boleh menghapus peserta lain.
+- Tidak bisa menghapus peserta owner sendiri via endpoint ini (`400`).
+- Hard delete: participant record dan semua personal item milik peserta tersebut ikut dihapus.
+
+**Keluar dari trip — `DELETE /trips/:tripId/participants/me`**
+- Endpoint baru. Semua peserta **kecuali owner** bisa keluar dari trip.
+- Owner mendapat `403` — harus hapus trip (`DELETE /trips/:id`) jika ingin menutup trip.
+- Caller diidentifikasi via `userId` dari auth token, dicocokkan ke `participants[].userId`.
+- Hard delete: participant record dan semua personal item milik caller ikut dihapus.
+
+### Migration checklist (backend)
+```sql
+ALTER TABLE trips ADD COLUMN owner_id TEXT NOT NULL DEFAULT '';
+ALTER TABLE participants ADD COLUMN user_id TEXT DEFAULT NULL;
+-- Isi owner_id untuk trip yang sudah ada (contoh: ambil dari participant pertama)
+UPDATE trips SET owner_id = (
+  SELECT user_id FROM participants
+  WHERE trip_id = trips.id AND user_id IS NOT NULL
+  ORDER BY created_at ASC LIMIT 1
+) WHERE owner_id = '';
+```
+
+---
+
 ## [1.6.0] — 2026-07-25
 
 ### Added
