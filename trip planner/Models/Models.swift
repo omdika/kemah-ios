@@ -59,6 +59,8 @@ struct TripSummary: Codable, Identifiable, Hashable {
     var budgetMode: BudgetMode
     var participantCount: Int
     var checklistProgress: ChecklistProgress
+    /// userId of the trip creator. Nil only for old trips before v1.7.0 migration. [v1.7.0]
+    var ownerId: String? = nil
 }
 
 // MARK: - Trip (full detail — GET /trips/:id)
@@ -77,6 +79,8 @@ struct Trip: Codable, Identifiable, Hashable {
     var status: TripStatus
     var budgetTarget: Double
     var budgetMode: BudgetMode
+    /// userId of the trip creator. [v1.7.0]
+    var ownerId: String? = nil
     var participants: [Participant]
     var items: [ChecklistItem]
     var budgetItems: [BudgetItem]
@@ -95,6 +99,8 @@ struct TripImage: Codable, Identifiable, Hashable {
 
 struct Participant: Codable, Identifiable, Hashable {
     let id: String
+    /// Nil for manually-added participants not yet linked to an account. [v1.7.0]
+    var userId: String? = nil
     var name: String
     var picForLabel: String
     var headcount: Int

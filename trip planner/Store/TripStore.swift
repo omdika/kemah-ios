@@ -63,6 +63,12 @@ final class TripStore: ObservableObject {
     var upcomingTrips: [TripSummary] { trips.filter { $0.status == .upcoming } }
     var historyTrips: [TripSummary] { trips.filter { $0.status == .selesai } }
 
+    /// True when the signed-in user is the owner of the currently open trip.
+    var isOwner: Bool {
+        guard let userId = user?.id, let ownerId = activeTrip?.ownerId else { return false }
+        return userId == ownerId
+    }
+
     // MARK: - Split Bill
 
     func loadSettlement(for trip: Trip) async {
@@ -342,6 +348,26 @@ final class TripStore: ObservableObject {
             )
             await refreshActive()
             showToast("Peran \(participant.name) diperbarui")
+        } catch { errorMessage = error.localizedDescription }
+    }
+
+    func deleteParticipant(_ participant: Participant) async {
+        guard let id = activeTrip?.id else { return }
+        do {
+            try await repository.deleteParticipant(tripId: id, participantId: participant.id)
+            await refreshActive()
+            showToast("\(participant.name) dihapus dari trip")
+        } catch { errorMessage = error.localizedDescription }
+    }
+
+    func leaveTrip() async {
+        guard let id = activeTrip?.id else { return }
+        do {
+            try await repository.leaveTrip(tripId: id)
+            activeTrip = nil
+            activeSettlement = nil
+            await loadTrips()
+            showToast("Kamu keluar dari trip")
         } catch { errorMessage = error.localizedDescription }
     }
 

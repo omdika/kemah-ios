@@ -210,6 +210,11 @@ final class APIClient: Sendable {
         let _: EmptyResponse = try await request(.delete, path: "trips/\(tripId)/participants/\(participantId)")
     }
 
+    /// [v1.7.0] Caller leaves the trip. Owner gets 403 from server.
+    func leaveTrip(tripId: String) async throws {
+        let _: EmptyResponse = try await request(.delete, path: "trips/\(tripId)/participants/me")
+    }
+
     // MARK: - Checklist items
 
     func addItem(tripId: String, _ body: CreateItemRequest) async throws -> ChecklistItem {

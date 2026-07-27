@@ -34,7 +34,8 @@ actor MockRepository: KemahRepository {
                 mapLink: trip.mapLink, phone: trip.phone, docsLink: trip.docsLink,
                 status: trip.status, budgetTarget: trip.budgetTarget, budgetMode: trip.budgetMode,
                 participantCount: trip.participants.count,
-                checklistProgress: ChecklistProgress(checked: checked, total: items.count)
+                checklistProgress: ChecklistProgress(checked: checked, total: items.count),
+                ownerId: trip.ownerId
             )
         }
     }
@@ -45,7 +46,7 @@ actor MockRepository: KemahRepository {
     }
 
     func createTrip(_ body: CreateTripRequest) async throws -> Trip {
-        let creator = Participant(id: "p_\(UUID().uuidString.prefix(8))", name: currentUser.name, picForLabel: "Koordinator", headcount: 1)
+        let creator = Participant(id: "p_\(UUID().uuidString.prefix(8))", userId: currentUser.id, name: currentUser.name, picForLabel: "Koordinator", headcount: 1)
         let trip = Trip(
             id: "t_\(UUID().uuidString.prefix(8))",
             name: body.name, location: body.location, date: body.date,
@@ -54,6 +55,7 @@ actor MockRepository: KemahRepository {
             phone: body.phone.isEmpty ? nil : body.phone,
             docsLink: body.docsLink.isEmpty ? nil : body.docsLink,
             status: .upcoming, budgetTarget: 0, budgetMode: .auto,
+            ownerId: currentUser.id,
             participants: [creator], items: [], budgetItems: []
         )
         store.insert(trip, at: 0)
@@ -98,7 +100,25 @@ actor MockRepository: KemahRepository {
     }
 
     func deleteParticipant(tripId: String, participantId: String) async throws {
-        _ = try mutate(tripId) { $0.participants.removeAll { $0.id == participantId } }
+        _ = try mutate(tripId) { t in
+            guard let p = t.participants.first(where: { $0.id == participantId }) else { return }
+            t.participants.removeAll { $0.id == participantId }
+            // cascade: remove personal items owned by this participant
+            t.items.removeAll { $0.isPersonal && $0.owner == p.name }
+            t.budgetItems.removeAll { $0.isPersonal && $0.owner == p.name }
+        }
+    }
+
+    func leaveTrip(tripId: String) async throws {
+        _ = try mutate(tripId) { t in
+            guard t.ownerId != currentUser.id else {
+                throw APIError.http(status: 403, body: "Trip owner cannot leave — delete the trip instead")
+            }
+            t.participants.removeAll { $0.userId == currentUser.id }
+            t.items.removeAll { $0.isPersonal && $0.owner == currentUser.name }
+            t.budgetItems.removeAll { $0.isPersonal && $0.owner == currentUser.name }
+        }
+        store.removeAll { $0.id == tripId }
     }
 
     // MARK: Checklist items
@@ -278,9 +298,9 @@ actor MockRepository: KemahRepository {
     // MARK: Helpers
 
     @discardableResult
-    private func mutate(_ id: String, _ change: (inout Trip) -> Void) throws -> Trip {
+    private func mutate(_ id: String, _ change: (inout Trip) throws -> Void) throws -> Trip {
         guard let idx = store.firstIndex(where: { $0.id == id }) else { throw APIError.invalidResponse }
-        change(&store[idx])
+        try change(&store[idx])
         return store[idx]
     }
 
@@ -304,8 +324,8 @@ actor MockRepository: KemahRepository {
     // MARK: Seed
 
     private static func seed() -> [Trip] {
-        func p(_ name: String, _ role: String, _ head: Int) -> Participant {
-            Participant(id: "p_\(name.lowercased())", name: name, picForLabel: role, headcount: head)
+        func p(_ name: String, _ role: String, _ head: Int, userId: String? = nil) -> Participant {
+            Participant(id: "p_\(name.lowercased())", userId: userId, name: name, picForLabel: role, headcount: head)
         }
         func item(_ id: String, _ name: String, _ qty: Int, _ pic: String, _ note: String, _ checked: Bool, _ personal: Bool = false, owner: String? = nil) -> ChecklistItem {
             ChecklistItem(id: id, name: name, qty: qty, pic: personal ? nil : pic, note: note, checked: checked, isPersonal: personal, owner: personal ? owner : nil)
@@ -318,8 +338,9 @@ actor MockRepository: KemahRepository {
             id: "t1", name: "Camping Gunung Papandayan", location: "Garut, Jawa Barat", date: "2026-08-01",
             coverUrl: nil, mapLink: "https://maps.google.com/?q=Gunung+Papandayan", phone: "081234567890",
             status: .upcoming, budgetTarget: 1_200_000, budgetMode: .manual,
+            ownerId: "u_irma",
             participants: [
-                p("Irma", "Koordinator", 3),
+                p("Irma", "Koordinator", 3, userId: "u_irma"),
                 p("Yuki", "PIC Tenda", 4),
                 p("Pepi", "PIC Memasak", 4),
                 p("Ria", "PIC Tiket & Logistik", 3),
@@ -373,8 +394,9 @@ actor MockRepository: KemahRepository {
             id: "t2", name: "Trip Zenk: Malang", location: "Malang, Jawa Timur", date: "2026-06-19",
             coverUrl: nil, mapLink: "https://maps.google.com/?q=Malang+Jawa+Timur", phone: nil,
             status: .selesai, budgetTarget: 9_653_877, budgetMode: .auto,
+            ownerId: "u_irma",
             participants: [
-                p("Irma", "Koordinator", 3),
+                p("Irma", "Koordinator", 3, userId: "u_irma"),
                 p("Yuki", "PIC Dokumentasi", 4),
                 p("Devi", "PIC Konsumsi", 4),
                 p("Ria", "PIC Tiket & Logistik", 3),

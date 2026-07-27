@@ -21,6 +21,7 @@ protocol KemahRepository: Sendable {
     func addParticipant(tripId: String, name: String) async throws -> Participant
     func updateParticipant(tripId: String, participantId: String, _ body: UpdateParticipantRequest) async throws -> Participant
     func deleteParticipant(tripId: String, participantId: String) async throws
+    func leaveTrip(tripId: String) async throws
 
     func addItem(tripId: String, _ body: CreateItemRequest) async throws -> ChecklistItem
     func updateItem(tripId: String, itemId: String, _ body: UpdateItemRequest) async throws -> ChecklistItem
@@ -64,6 +65,9 @@ final class APIRepository: KemahRepository {
     }
     func deleteParticipant(tripId: String, participantId: String) async throws {
         try await client.deleteParticipant(tripId: tripId, participantId: participantId)
+    }
+    func leaveTrip(tripId: String) async throws {
+        try await client.leaveTrip(tripId: tripId)
     }
 
     func addItem(tripId: String, _ body: CreateItemRequest) async throws -> ChecklistItem {
