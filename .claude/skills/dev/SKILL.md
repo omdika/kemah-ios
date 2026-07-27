@@ -14,8 +14,14 @@ Selalu mulai dengan membaca **CHANGELOG.md** untuk menemukan versi terbaru:
 docs/handoff/CHANGELOG.md
 ```
 Cari entry `## [X.Y.Z]` paling atas — itu adalah spec yang harus diimplementasikan.
-Lalu baca detail di:
-- `docs/handoff/API_CONTRACT.md` — endpoint dan request/response shape
+
+Jika entry ditulis oleh `/pm`, ia punya blok terstruktur — gunakan langsung:
+- **`#### Frontend (iOS Swift)`** → daftar file dan perubahan yang harus dikerjakan (untuk `/dev frontend`)
+- **`#### Backend (FastAPI)`** → endpoint, schema, migration (untuk `/dev backend`)
+- **`#### Auth rules`** → siapa boleh/tidak boleh, gunakan untuk validasi di MockRepository dan di instruksi backend
+
+Lalu baca detail lengkap di:
+- `docs/handoff/API_CONTRACT.md` — contoh JSON request/response
 - `docs/handoff/README.md` — logika bisnis dan aturan
 
 Jangan implementasi fitur yang tidak ada di latest changelog entry.

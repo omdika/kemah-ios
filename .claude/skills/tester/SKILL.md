@@ -16,7 +16,15 @@ Selalu mulai dengan membaca CHANGELOG.md:
 docs/handoff/CHANGELOG.md
 ```
 Temukan entry `## [X.Y.Z]` paling atas — itu scope fitur yang harus dicakup test.
-Baca detail endpoint dan rules di `API_CONTRACT.md` dan `README.md`.
+
+Jika entry ditulis oleh `/pm`, ia punya blok **`#### Test scenarios`** — gunakan itu sebagai daftar test case yang **wajib** dicakup. Jangan skip skenario yang tercantum di sana.
+
+Juga baca:
+- **`#### Auth rules`** — setiap aturan auth di sana harus ada error path test-nya
+- **`#### Frontend (iOS Swift)`** untuk `/tester latest` — tahu file mana yang berubah dan harus diverifikasi
+- **`#### Backend (FastAPI)`** untuk `/tester regression` — tahu endpoint mana yang harus di-hit
+
+Baca detail di `API_CONTRACT.md` dan `README.md` untuk konteks lengkap.
 
 ---
 
