@@ -98,11 +98,11 @@ Profil yang terhubung membantu peserta dikenali saat bergabung ke trip melalui l
 
 | Tampilan | Deskripsi |
 |---|---|
-| <img width="1920" alt="image" src="https://github.com/user-attachments/assets/506d9fec-1167-42d5-807d-ebaa0e740f3a" /> | **Trip Kamu** — lihat trip yang akan datang, progres checklist, peserta, dan riwayat perjalanan. |
-| <img width="1920" alt="image" src="https://github.com/user-attachments/assets/0109235f-9f98-4c86-8c9a-634037531dc6" /> | **Checklist Trip** — bagi barang bawaan, tiket, dan logistik kepada PIC yang bertanggung jawab. |
-| <img width="1920" alt="image" src="https://github.com/user-attachments/assets/f57aaa68-f02d-425b-bf3b-b4a6b3d49576" /> | **Budget Trip** — catat pengeluaran dan tentukan cara pembagiannya. |
-| <img width="1920" alt="image" src="https://github.com/user-attachments/assets/ece106ae-2f2e-495a-88ca-d48e259cdd40" /> | **Peserta** — kelola anggota trip, peran, dan jumlah orang yang ikut. |
-| <img width="1920" alt="image" src="https://github.com/user-attachments/assets/8c20feb1-751a-4003-9efa-b4e9d5dc8998" /> | **Split Bill** — lihat ringkasan dana dan transfer yang perlu dilakukan sampai semua lunas. |
+| <img width="320" alt="image" src="https://github.com/user-attachments/assets/506d9fec-1167-42d5-807d-ebaa0e740f3a" /> | **Trip Kamu** — lihat trip yang akan datang, progres checklist, peserta, dan riwayat perjalanan. |
+| <img width="320" alt="image" src="https://github.com/user-attachments/assets/0109235f-9f98-4c86-8c9a-634037531dc6" /> | **Checklist Trip** — bagi barang bawaan, tiket, dan logistik kepada PIC yang bertanggung jawab. |
+| <img width="320" alt="image" src="https://github.com/user-attachments/assets/f57aaa68-f02d-425b-bf3b-b4a6b3d49576" /> | **Budget Trip** — catat pengeluaran dan tentukan cara pembagiannya. |
+| <img width="320" alt="image" src="https://github.com/user-attachments/assets/ece106ae-2f2e-495a-88ca-d48e259cdd40" /> | **Peserta** — kelola anggota trip, peran, dan jumlah orang yang ikut. |
+| <img width="320" alt="image" src="https://github.com/user-attachments/assets/8c20feb1-751a-4003-9efa-b4e9d5dc8998" /> | **Split Bill** — lihat ringkasan dana dan transfer yang perlu dilakukan sampai semua lunas. |
 
 ## Fitur Pendukung
 
