@@ -2,6 +2,10 @@
 
 > Rencanakan perjalanan, bagi tugas, catat pengeluaran, dan selesaikan urusan patungan tanpa drama.
 
+<div align="center">
+<img width="320" alt="image" src="https://github.com/user-attachments/assets/506d9fec-1167-42d5-807d-ebaa0e740f3a" /> 
+</div>
+
 Kemah adalah aplikasi iOS untuk membantu kelompok mengatur perjalanan camping dari persiapan sampai semua biaya selesai dibagi. Semua informasi trip tersimpan di satu tempat, sehingga setiap peserta tahu apa yang harus dibawa, siapa yang bertanggung jawab, dan berapa dana yang perlu dibayarkan.
 
 ## Kenapa Kemah?
