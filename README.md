@@ -1,4 +1,4 @@
-# Kemah — Teman Merencanakan Camping Bareng
+# Kemah — Teman Merencanakan Trip Bareng
 
 > Rencanakan perjalanan, bagi tugas, catat pengeluaran, dan selesaikan urusan patungan tanpa drama.
 
