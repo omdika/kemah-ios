@@ -1,3 +1,6 @@
+[![View All Projects](https://img.shields.io/badge/View_All_Projects-omdika.github.io-blue?style=flat-square&logo=github)](https://omdika.github.io/)
+
+
 # Kemah — Teman Merencanakan Trip Bareng
 
 > Rencanakan perjalanan, bagi tugas, catat pengeluaran, dan selesaikan urusan patungan tanpa drama.
