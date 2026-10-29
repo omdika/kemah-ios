@@ -6,7 +6,9 @@
 > Rencanakan perjalanan, bagi tugas, catat pengeluaran, dan selesaikan urusan patungan tanpa drama.
 
 <div align="center">
-<img width="320" alt="image" src="https://github.com/user-attachments/assets/506d9fec-1167-42d5-807d-ebaa0e740f3a" /> 
+<!-- <img width="320" alt="image" src="https://github.com/user-attachments/assets/506d9fec-1167-42d5-807d-ebaa0e740f3a" />  -->
+<img width="320" alt="image" src="https://github.com/user-attachments/assets/b5eb5368-06ce-4f75-a6ba-b2ac01a87854" />
+
 </div>
 
 Kemah adalah aplikasi iOS untuk membantu kelompok mengatur perjalanan camping dari persiapan sampai semua biaya selesai dibagi. Semua informasi trip tersimpan di satu tempat, sehingga setiap peserta tahu apa yang harus dibawa, siapa yang bertanggung jawab, dan berapa dana yang perlu dibayarkan.
@@ -105,11 +107,11 @@ Profil yang terhubung membantu peserta dikenali saat bergabung ke trip melalui l
 
 | Tampilan | Deskripsi |
 |---|---|
-| <img width="320" alt="image" src="https://github.com/user-attachments/assets/506d9fec-1167-42d5-807d-ebaa0e740f3a" /> | **Trip Kamu** — lihat trip yang akan datang, progres checklist, peserta, dan riwayat perjalanan. |
-| <img width="320" alt="image" src="https://github.com/user-attachments/assets/0109235f-9f98-4c86-8c9a-634037531dc6" /> | **Checklist Trip** — bagi barang bawaan, tiket, dan logistik kepada PIC yang bertanggung jawab. |
-| <img width="320" alt="image" src="https://github.com/user-attachments/assets/f57aaa68-f02d-425b-bf3b-b4a6b3d49576" /> | **Budget Trip** — catat pengeluaran dan tentukan cara pembagiannya. |
-| <img width="320" alt="image" src="https://github.com/user-attachments/assets/ece106ae-2f2e-495a-88ca-d48e259cdd40" /> | **Peserta** — kelola anggota trip, peran, dan jumlah orang yang ikut. |
-| <img width="320" alt="image" src="https://github.com/user-attachments/assets/8c20feb1-751a-4003-9efa-b4e9d5dc8998" /> | **Split Bill** — lihat ringkasan dana dan transfer yang perlu dilakukan sampai semua lunas. |
+| <img width="320" alt="image" src="https://github.com/user-attachments/assets/b5eb5368-06ce-4f75-a6ba-b2ac01a87854" /> | **Trip Kamu** — lihat trip yang akan datang, progres checklist, peserta, dan riwayat perjalanan. |
+| <img width="320" alt="image" src="https://github.com/user-attachments/assets/3ac1ed92-099a-4e27-94eb-77d7d73977d3" /> | **Checklist Trip** — bagi barang bawaan, tiket, dan logistik kepada PIC yang bertanggung jawab. |
+| <img width="320" alt="image" src="https://github.com/user-attachments/assets/b8b5826c-9b9c-4a83-afe4-1ecf42408917" /> | **Budget Trip** — catat pengeluaran dan tentukan cara pembagiannya. |
+| <img width="320" alt="image" src="https://github.com/user-attachments/assets/d928d751-44b1-4cc4-9950-24f82b683caf" /> | **Peserta** — kelola anggota trip, peran, dan jumlah orang yang ikut. |
+| <img width="320" alt="image" src="https://github.com/user-attachments/assets/a3e93422-d454-425c-9f8b-a067811c38f1" /> | **Split Bill** — lihat ringkasan dana dan transfer yang perlu dilakukan sampai semua lunas. |
 
 ## Fitur Pendukung
 
